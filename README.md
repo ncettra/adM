@@ -18,7 +18,7 @@ Cortex M3: Es una familia de microcontroladores de alto rendimiento diseñada pa
 
 Cortex M4: Es una familia de microcontroladores de alto rendimiento diseñada para aplicaciones que requieren procesamiento de señales digitales y análisis de datos. Incluye todas las características del Cortex M3, además de una unidad de procesamiento de señales digitales (DSP) y una unidad de coma flotante de precisión simple y doble. 
 
-#Thumb
+# Thumb
 
 El conjunto de instrucciones Thumb utiliza instrucciones de 16 bits, lo que lo hace más compacto, esto puede reducir significativamente la cantidad de memoria requerida para almacenar un programa.
 
