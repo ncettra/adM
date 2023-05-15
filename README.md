@@ -36,6 +36,10 @@ Algunas de las instrucciones que no se pueden ejecutar directamente en una arqui
 Tiene un modelo de memoria plano y lineal. El mapa de memoria de Cortex-M es relativamente simple y consiste en un espacio de direcciones de 32 bits, esto implica un direccionamiento de 2^32 posibles posiciones (4GB)
 
 
+# 18. ¿Qué funciones cumple la unidad de protección de memoria (MPU)?
+
+Permite establecer políticas de protección y seguridad para la memoria y otros recursos del sistema. La MPU puede dividir la memoria en diferentes regiones y asignar permisos de acceso a cada una de ellas. De esta manera, se pueden prevenir accesos no autorizados a regiones críticas del sistema, proteger los datos del usuario y evitar que se corrompa la memoria. 
+
 
 
 
