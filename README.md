@@ -27,6 +27,14 @@ El conjunto de instrucciones Thumb utiliza instrucciones de 16 bits, lo que lo h
 
 # 3. ¿Qué entiende por arquitectura load-store? ¿Qué tipo de instrucciones no posee este tipo de arquitectura?
 
+En una arquitectura load-store, las instrucciones aritméticas y lógicas no pueden acceder directamente a la memoria, sino que operan solo en los datos que están en los registros de la CPU. Esto significa que cualquier operación aritmética o lógica en la memoria debe primero cargar los datos en los registros, realizar la operación y luego almacenar el resultado de vuelta en la memoria.
+
+Algunas de las instrucciones que no se pueden ejecutar directamente en una arquitectura load-store son aquellas que involucran operaciones de lectura o escritura directa en la memoria, como las instrucciones de entrada/salida (I/O), las instrucciones de llamada al sistema y las instrucciones de manipulación de punteros de memoria. Estas instrucciones a menudo requieren el acceso directo a la memoria sin la necesidad de cargar los datos en los registros de la CPU primero.
+
+# 4. ¿Cómo es el mapa de memoria de la familia?
+
+Tiene un modelo de memoria plano y lineal. El mapa de memoria de Cortex-M es relativamente simple y consiste en un espacio de direcciones de 32 bits, esto implica un direccionamiento de 2^32 posibles posiciones (4GB)
+
 
 
 
