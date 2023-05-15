@@ -1,5 +1,10 @@
 # Repositorio de Arquitectura de Microprocesadores
 
+Aquí en el readme file se encuentran las respuestas a las preguntas orientadoras propinadas por la catedra.
+
+
+
+
 # # Preguntas orientadoras
 
 # 1. Describa brevemente los diferentes perfiles de familias de microprocesadores/microcontroladores de ARM. Explique alguna de sus diferencias características.
