@@ -40,6 +40,41 @@ Algunas de las instrucciones que no se pueden ejecutar directamente en una arqui
 
 Tiene un modelo de memoria plano y lineal. El mapa de memoria de Cortex-M es relativamente simple y consiste en un espacio de direcciones de 32 bits, esto implica un direccionamiento de 2^32 posibles posiciones (4GB)
 
+# 5. ¿Qué ventajas presenta el uso de los “shadowed pointers” del PSP y el MSP?
+
+El uso de shadowed pointers en los registros MSP y PSP brinda beneficios significativos en términos de seguridad, depuración, tolerancia a fallos y eficiencia en el cambio de contexto. Estas características son valiosas en sistemas embebidos y aplicaciones críticas en tiempo real basadas en la arquitectura ARM Cortex-M.
+
+# 6. Describa los diferentes modos de privilegio y operación del Cortex M, sus relaciones y como se conmuta de uno al otro. Describa un ejemplo en el que se pasa del modo privilegiado a no priviligiado y nuevamente a privilegiado.
+
+La conmutación entre los modos privilegiado y no privilegiado en el Cortex-M se realiza mediante excepciones y eventos del sistema. El procesador guarda y restaura el estado y los registros relevantes durante el cambio de modo para mantener la integridad del sistema y permitir la ejecución de tareas en diferentes niveles de privilegio.
+
+    Paso del modo privilegiado al no privilegiado:
+        -El procesador se encuentra en el modo Handler, con acceso completo a los recursos.
+        -Ocurre una excepción o interrupción generada por una tarea en modo Thread.
+        -El procesador guarda el estado actual y los registros en la pila del modo Handler.
+        -El procesador pasa al modo Thread, con un nivel de privilegio más bajo.
+        -La excepción o interrupción se maneja en el modo Thread.
+        -Una vez que se completa el manejo de la excepción, el procesador restaura el estado guardado y los registros desde la pila del modo Handler.
+        -El procesador vuelve al modo Handler con el nivel de privilegio original.
+
+    Paso del modo no privilegiado al privilegiado:
+        -El procesador se encuentra en el modo Thread, con acceso restringido a ciertos recursos.
+        -Ocurre una excepción o evento del sistema que requiere acceder al modo Handler.
+        -El procesador guarda el estado actual y los registros en la pila del modo Thread.
+        -El procesador pasa al modo Handler, con un nivel de privilegio más alto.
+        -La excepción o evento del sistema se maneja en el modo Handler.
+        -Una vez que se completa el manejo de la excepción, el procesador restaura el estado guardado y los registros desde la pila del modo Thread.
+        -El procesador vuelve al modo Thread con el nivel de privilegio original.
+        
+# 7. ¿Qué se entiende por modelo de registros ortogonal? Dé un ejemplo
+
+Un modelo de registros ortogonal permite que los registros de un procesador sean utilizados de manera independiente y flexible, sin restricciones específicas sobre su uso o propósito. Esto brinda libertad al programador para asignar y utilizar los registros según las necesidades del programa, lo que proporciona eficiencia y flexibilidad en la programación.
+
+Esto se visualiza en un programa escrito en asembly por ejemplo, para la arquitectura ARM Cortex-M, se puede utilizar el registro R0 para almacenar un argumento de una función, el registro R1 para realizar cálculos intermedios, el registro R2 para almacenar un resultado parcial, y así sucesivamente.
+
+# 8. ¿Qué ventajas presenta el uso de intrucciones de ejecución condicional (IT)? Dé un ejemplo.
+
+
 
 # 18. ¿Qué funciones cumple la unidad de protección de memoria (MPU)?
 
