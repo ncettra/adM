@@ -2,9 +2,6 @@
 
 Aquí en el readme file se encuentran las respuestas a las preguntas orientadoras propinadas por la catedra.
 
-
-
-
 # # Preguntas orientadoras
 
 # 1. Describa brevemente los diferentes perfiles de familias de microprocesadores/microcontroladores de ARM. Explique alguna de sus diferencias características.
@@ -70,10 +67,21 @@ La conmutación entre los modos privilegiado y no privilegiado en el Cortex-M se
 
 Un modelo de registros ortogonal permite que los registros de un procesador sean utilizados de manera independiente y flexible, sin restricciones específicas sobre su uso o propósito. Esto brinda libertad al programador para asignar y utilizar los registros según las necesidades del programa, lo que proporciona eficiencia y flexibilidad en la programación.
 
-Esto se visualiza en un programa escrito en asembly por ejemplo, para la arquitectura ARM Cortex-M, se puede utilizar el registro R0 para almacenar un argumento de una función, el registro R1 para realizar cálculos intermedios, el registro R2 para almacenar un resultado parcial, y así sucesivamente.
+    Esto se visualiza en un programa escrito en assembly por ejemplo, para la arquitectura ARM Cortex-M, se puede utilizar el registro R0 para almacenar un argumento de una función, el registro R1 para realizar cálculos intermedios, el registro R2 para almacenar un resultado parcial, y así sucesivamente.
 
 # 8. ¿Qué ventajas presenta el uso de intrucciones de ejecución condicional (IT)? Dé un ejemplo.
 
+El uso de instrucciones de ejecución condicional, también conocidas como IT (If-Then), ofrece varias ventajas en términos de eficiencia y ahorro de código en la programación en lenguaje Assembly
+
+    FALTA EL EJEMPLO!! buscar en el set
+
+# 17. ¿Qué es el systick? ¿Por qué puede afirmarse que su implementación favorece la portabilidad de los sistemas operativos embebidos?
+
+El SysTick es un temporizador integrado que proporciona una cuenta descendente hacia cero en función de un reloj de referencia y genera interrupciones cuando llega a cero.
+Favorece la portabilidad gracias a su disponibilidad universal, su temporización precisa y flexible. Esto permite que los sistemas operativos se adapten fácilmente a diferentes plataformas y aprovechen las capacidades del temporizador para la gestión de eventos y la temporización precisa.
+
+# 14. ¿Qué es el CMSIS? ¿Qué función cumple? ¿Quién lo provee? ¿Qué ventajas aporta?
+El CMSIS es un estándar proporcionado por ARM que ofrece una capa de abstracción de hardware, bibliotecas y herramientas para facilitar el desarrollo de software embebido en microcontroladores Cortex-M. El uso del CMSIS mejora la portabilidad del software, aumenta la eficiencia y productividad, y garantiza la compatibilidad con herramientas de desarrollo.
 
 
 # 18. ¿Qué funciones cumple la unidad de protección de memoria (MPU)?
