@@ -12,6 +12,9 @@ Cortex-R: Esta familia de microprocesadores ARM está diseñada para aplicacione
 
 Cortex-M: Esta familia de microcontroladores ARM está diseñada para sistemas embebidos de baja potencia y bajo costo, como sensores, dispositivos de control de acceso y otros sistemas embebidos. Estos microcontroladores tienen una arquitectura simple y están optimizados para un bajo consumo de energía.
 
+
+
+
 # # CORTEX M
 
 # 1. Describa brevemente las diferencias entre las familias de procesadores Cortex M0, M3 y M4.
@@ -74,6 +77,16 @@ Un modelo de registros ortogonal permite que los registros de un procesador sean
 El uso de instrucciones de ejecución condicional, también conocidas como IT (If-Then), ofrece varias ventajas en términos de eficiencia y ahorro de código en la programación en lenguaje Assembly
 
     FALTA EL EJEMPLO!! buscar en el set
+    
+# 9. Describa brevemente las excepciones más prioritarias (reset, NMI, Hardfault).
+
+# 10. Describa las funciones principales de la pila. ¿Cómo resuelve la arquitectura el llamado a funciones y su retorno?
+
+# 11. Describa la secuencia de reset del microprocesador.
+
+# 12. ¿Qué entiende por “core peripherals”? ¿Qué diferencia existe entre estos y el resto de los periféricos?
+
+# 13. ¿Cómo se implementan las prioridades de las interrupciones? Dé un ejemplo
 
 # 14. ¿Qué es el CMSIS? ¿Qué función cumple? ¿Quién lo provee? ¿Qué ventajas aporta?
 El CMSIS es un estándar proporcionado por ARM que ofrece una capa de abstracción de hardware, bibliotecas y herramientas para facilitar el desarrollo de software embebido en microcontroladores Cortex-M. El uso del CMSIS mejora la portabilidad del software, aumenta la eficiencia y productividad, y garantiza la compatibilidad con herramientas de desarrollo.
@@ -87,7 +100,34 @@ Favorece la portabilidad gracias a su disponibilidad universal, su temporizació
 
 Permite establecer políticas de protección y seguridad para la memoria y otros recursos del sistema. La MPU puede dividir la memoria en diferentes regiones y asignar permisos de acceso a cada una de ellas. De esta manera, se pueden prevenir accesos no autorizados a regiones críticas del sistema, proteger los datos del usuario y evitar que se corrompa la memoria. 
 
+# 19. ¿Cuántas regiones pueden configurarse como máximo? ¿Qué ocurre en caso de haber solapamientos de las regiones? ¿Qué ocurre con las zonas de memoria no cubiertas por las regiones definidas?
+
+# 20. ¿Para qué se suele utilizar la excepción PendSV? ¿Cómo se relaciona su uso con el resto de las excepciones? Dé un ejemplo
+
+# 21. ¿Para qué se suele utilizar la excepción SVC? Expliquelo dentro de un marco de un sistema operativo embebido.
 
 
 
 
+
+# # ISA
+
+# 1. ¿Qué son los sufijos y para qué se los utiliza? Dé un ejemplo
+
+Los sufijos se utilizan para especificar condiciones de ejecución y tamaños de datos en las instrucciones
+
+# 2. ¿Para qué se utiliza el sufijo ‘s’? Dé un ejemplo
+
+Se utiliza para indicar que una instrucción aritmética o lógica debe actualizar las banderas de estado después de su ejecución. Esto es útil para tomar decisiones condicionales basadas en el resultado de la operación.
+
+# 3. ¿Qué utilidad tiene la implementación de instrucciones de aritmética saturada? Dé un ejemplo con operaciones con datos de 8 bits.
+
+Es útil para evitar desbordamientos en operaciones aritméticas y garantizar resultados válidos dentro de un rango predefinido. Un ejemplo donde se puede aplicar es el control del volumen, suponiendo los 8 bits al sobrepasar el 255, por desbordamiento pasaria a cero, o viceversa (de 0 a 255), en este caso aplicar este tipo de implementacion seria util.
+
+# 4. Describa brevemente la interfaz entre assembler y C ¿Cómo se reciben los argumentos de las funciones? ¿Cómo se devuelve el resultado? ¿Qué registros deben guardarse en la pila antes de ser modificados?
+
+La interfaz entre ensamblador y C establece cómo se pasan los argumentos, se devuelve el resultado y se gestionan los registros en el contexto de una llamada a una función escrita en C desde código ensamblador. Siguiendo las convenciones establecidas, se garantiza la comunicación y compatibilidad adecuada entre ambos lenguajes. Los registros deben ser guardados ante cada llamada de funcion para preservar el contexto de la tarea anterior, es decir si estoy utilizando los registros y llamo a la funcion "suma", debo guardar los registros en memoria para ejecutar la funcion y posteriormente volver a cargar los registros
+
+# 5. ¿Qué es una instrucción SIMD? ¿En qué se aplican y que ventajas reporta su uso? Dé un ejemplo.
+
+Las instrucciones SIMD permiten realizar operaciones en paralelo en conjuntos de datos, lo que resulta en un mayor rendimiento, un uso eficiente de los recursos y una optimización del código.
