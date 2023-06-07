@@ -75,14 +75,13 @@ El uso de instrucciones de ejecución condicional, también conocidas como IT (I
 
     FALTA EL EJEMPLO!! buscar en el set
 
+# 14. ¿Qué es el CMSIS? ¿Qué función cumple? ¿Quién lo provee? ¿Qué ventajas aporta?
+El CMSIS es un estándar proporcionado por ARM que ofrece una capa de abstracción de hardware, bibliotecas y herramientas para facilitar el desarrollo de software embebido en microcontroladores Cortex-M. El uso del CMSIS mejora la portabilidad del software, aumenta la eficiencia y productividad, y garantiza la compatibilidad con herramientas de desarrollo.
+
 # 17. ¿Qué es el systick? ¿Por qué puede afirmarse que su implementación favorece la portabilidad de los sistemas operativos embebidos?
 
 El SysTick es un temporizador integrado que proporciona una cuenta descendente hacia cero en función de un reloj de referencia y genera interrupciones cuando llega a cero.
 Favorece la portabilidad gracias a su disponibilidad universal, su temporización precisa y flexible. Esto permite que los sistemas operativos se adapten fácilmente a diferentes plataformas y aprovechen las capacidades del temporizador para la gestión de eventos y la temporización precisa.
-
-# 14. ¿Qué es el CMSIS? ¿Qué función cumple? ¿Quién lo provee? ¿Qué ventajas aporta?
-El CMSIS es un estándar proporcionado por ARM que ofrece una capa de abstracción de hardware, bibliotecas y herramientas para facilitar el desarrollo de software embebido en microcontroladores Cortex-M. El uso del CMSIS mejora la portabilidad del software, aumenta la eficiencia y productividad, y garantiza la compatibilidad con herramientas de desarrollo.
-
 
 # 18. ¿Qué funciones cumple la unidad de protección de memoria (MPU)?
 
