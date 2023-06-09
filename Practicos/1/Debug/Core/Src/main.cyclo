@@ -1,0 +1,8 @@
+main.c:70:13:PrivilegiosSVC	1
+main.c:130:5:main	1
+main.c:178:6:SystemClock_Config	3
+main.c:224:13:MX_ETH_Init	2
+main.c:273:13:MX_USART3_UART_Init	2
+main.c:306:13:MX_USB_OTG_FS_PCD_Init	2
+main.c:341:13:MX_GPIO_Init	1
+main.c:399:6:Error_Handler	1
