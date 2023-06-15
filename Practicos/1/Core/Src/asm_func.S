@@ -331,11 +331,69 @@ loop_10_2:
     bx lr
 
 
+/*
+11) La correlación cruzada (del inglés cross correlation) es una operación usada para estudiar el
+grado de similitud de dos señales y su fase relativa, aún en presencia de ruido. La correlación de dos
+funciones da como resultado una nueva función llamada función de correlación.
+
+Realizar una función que calcule la correlación entre dos vectores. Luego optimice utilizando
+instrucciones SIMD.
+
+prototipo: void corr (int16_t *vectorX, int16_t * vector Y, int16_t vectorCorr, uint32_t longitud)
 
 
+*/
 
+.thumb_func
+asm_calcularCorrelacion:
+    push {r4, r5, r6}           	// Guardar registros en la pila
+    mov r4, r0                      // Puntero al primer vector
+    mov r5, r1                      // Puntero al segundo vector
+    mov r6, r2                      // Longitud de los vectores
+    ldr r0, [r4]                    // Cargar el primer valor del primer vector
+    ldr r1, [r5]                    // Cargar el primer valor del segundo vector
+    mov r2, #0                      // Inicializar el acumulador de la correlación en cero
+loop_11:
+    mul r3, r0, r1                  // Multiplicar los valores de los vectores
+    add r2, r2, r3                  // Acumular el resultado de la multiplicación
+    add r4, r4, #4                  // Avanzar al siguiente valor del primer vector (incrementar en 4 bytes)
+    add r5, r5, #4                  // Avanzar al siguiente valor del segundo vector (incrementar en 4 bytes)
+    ldr r0, [r4]                    // Cargar el siguiente valor del primer vector
+    ldr r1, [r5]                    // Cargar el siguiente valor del segundo vector
+    subs r6, r6, #1                 // Decrementar el contador de longitud en 1
+    cmp r6, #0                      // Comparar el contador con cero
+    bne loop_11                     // Repetir mientras el contador no sea cero
+    pop {r4, r5, r6}            	// Recuperar registros y retornar
+    bx lr
 
+// con simd
 
-
-
+.thumb_func
+asm_calcularCorrelacion_SIMD:
+    push {r4, r5, r6, r7}       // Guardar registros en la pila
+    mov r4, r0                      // Puntero al primer vector
+    mov r5, r1                      // Puntero al segundo vector
+    mov r6, r2                      // Longitud de los vectores
+    mov r7, r6                      // Copiar la longitud para usarla como contador
+    vdup.32 q0, r6                  // Cargar la longitud en un registro SIMD
+    ldm r4, {d0-d3}                 // Cargar los primeros 8 elementos del primer vector en registros SIMD
+    ldm r5, {d4-d7}                 // Cargar los primeros 8 elementos del segundo vector en registros SIMD
+    vmul.i32 q1, q0, d0             // Multiplicar los valores de los vectores por la longitud
+    vmla.i32 q1, q0, d4             // Acumular el resultado de la multiplicación
+loop_11_2:
+    add r4, r4, #32                 // Avanzar al siguiente grupo de 8 elementos del primer vector (incrementar en 32 bytes)
+    add r5, r5, #32                 // Avanzar al siguiente grupo de 8 elementos del segundo vector (incrementar en 32 bytes)
+    subs r7, r7, #8                 // Decrementar el contador de longitud en 8
+    cmp r7, #0                      // Comparar el contador con cero
+    beq endloop_11                  // Salir del bucle si el contador es cero
+    vldm r4, {d0-d3}                // Cargar los siguientes 8 elementos del primer vector en registros SIMD
+    vldm r5, {d4-d7}                // Cargar los siguientes 8 elementos del segundo vector en registros SIMD
+    vmla.i32 q1, q0, d0             // Multiplicar y acumular los nuevos valores
+    b loop_11_2                     // Repetir el bucle
+endloop_11:
+    vpadd.i32 d0, d2, d1            // Sumar las partes bajas y altas del registro SIMD
+    vpadd.i32 d0, d0, d0            // Sumar los resultados parciales
+    vmov r2, s0                     // Mover el resultado final a un registro general
+    pop {r4, r5, r6, r7}        	// Recuperar registros y retornar
+    bx lr
 
