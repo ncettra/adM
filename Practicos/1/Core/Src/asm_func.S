@@ -263,3 +263,29 @@ skip_8:
     bne loop_8                        // Repetir mientras contador de longitud no sea cero
     pop {r4, r5}                // Recuperar registros y retornar
     bx lr
+
+/*
+9) Realizar una función que reciba un vector de muestras no signadas de 16 bits e invierta su orden.
+
+prototipo: void invertir (uint16_t * vector, uint32_t longitud);
+
+*/
+.thumb_func
+asm_invertir:
+
+    mov r3, r0                      // Puntero al vector de entrada
+    mov r0, r1                      // Longitud del vector
+
+    lsl r1, r1, #1                  // Calcular el número total de bytes
+    add r1, r3, r1                  // Calcular la dirección del último elemento
+
+loop:
+    ldrh r2, [r1]                   // Cargar muestra del último elemento
+    strh r2, [r3], #-2              // Almacenar muestra en la dirección actual y retroceder 2 bytes
+
+    subs r0, r0, #1                 // Decrementar contador de longitud
+    cmp r0, #0                      // Comparar contador con cero
+    bne loop                        // Repetir mientras contador no sea cero
+
+    bx lr
+
