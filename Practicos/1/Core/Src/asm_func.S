@@ -273,7 +273,6 @@ loop_9:
 
 
 /*
-
 10) Realizar una función que recibe un vector de 4096 valores de 16 bits (signados), que
 corresponden a muestras de audio tomadas a una tasa de muestreo de 44.100 muestras/s. La función
 debe introducir un “eco” de la mitad de la amplitud de la muestra original a los 20ms de comenzada
@@ -284,9 +283,9 @@ iguales es de 882?
 Variante: Una vez implementada la función, programar una nueva versión que utilice las
 instrucciones SIMD para optimizar la ejecución del algoritmo.
 
+SON 882 muestras porque por un lado el sampleo es de 44100 m/s => 0.0227 ms por cada muetra. Por ende en 20ms de retraso, hay 882 muetras (20ms/0.0227ms)
 
 */
-
 
 .thumb_func
 asm_introducirEco:
@@ -370,7 +369,7 @@ loop_11:
 
 .thumb_func
 asm_calcularCorrelacion_SIMD:
-    push {r4, r5, r6, r7}       // Guardar registros en la pila
+    push {r4, r5, r6, r7}       	// Guardar registros en la pila
     mov r4, r0                      // Puntero al primer vector
     mov r5, r1                      // Puntero al segundo vector
     mov r6, r2                      // Longitud de los vectores
