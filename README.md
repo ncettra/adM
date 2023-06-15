@@ -113,6 +113,9 @@ FUNCIONES Y RETORNO
 
 -- 11. Describa la secuencia de reset del microprocesador.
 
+-   Hard Reset: El reset físico se produce cuando se aplica una señal de reinicio a nivel de hardware, como pulsar el botón de reinicio en un dispositivo. Esta señal se propaga a través del sistema y activa el circuito de reset interno del microprocesador.
+-   Soft Reset: Todos los registros internos del microprocesador se restablecen a sus valores iniciales. Esto incluye los registros de propósito general, registros de estado, registros de control, etc. La memoria principal, como la RAM y la memoria caché, se borra y se inicializa a un estado conocido. Esto garantiza que no haya datos residuales o basura almacenados en la memoria. Se establecen los modos de operación iniciales del microprocesador, como el modo privilegiado, el modo de interrupción, etc. Se establecen los registros especiales que controlan el comportamiento del microprocesador, como el registro de puntero de pila (SP) y el registro de dirección de programa (PC).
+
 -- 12. ¿Qué entiende por “core peripherals”? ¿Qué diferencia existe entre estos y el resto de los periféricos?
 
 -- 13. ¿Cómo se implementan las prioridades de las interrupciones? Dé un ejemplo
