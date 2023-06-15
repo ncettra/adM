@@ -80,19 +80,36 @@ El uso de instrucciones de ejecución condicional, también conocidas como IT (I
     
 -- 9. Describa brevemente las excepciones más prioritarias (reset, NMI, Hardfault).
 
- Reset:
-        El reset es la excepción más prioritaria y se produce al iniciar o reiniciar el sistema. Cuando se activa el reset, se borra la memoria y se restablecen los registros del procesador a sus valores iniciales. Es el punto de partida para la ejecución del programa y establece el estado inicial del sistema.
+
+    Reset:
+        - El reset es la excepción más prioritaria y se produce al iniciar o reiniciar el sistema. Cuando se activa el reset, se borra la memoria y se restablecen los registros del procesador a sus valores iniciales. Es el punto de partida para la ejecución del programa y establece el estado inicial del sistema.
  
- NMI:
-        Se utiliza para eventos críticos que requieren una atención inmediata y no pueden ser bloqueados o deshabilitados.
  
- HardFault:
-        Es una excepción que ocurre cuando se produce una falla grave o una condición de error que el sistema no puede manejar. Puede ser causada por divisiones por cero, acceso a memoria no válida o instrucciones ilegales, entre otros.
+    NMI:
+        - Se utiliza para eventos críticos que requieren una atención inmediata y no pueden ser bloqueados o deshabilitados.
+ 
+
+    HardFault:
+        - Es una excepción que ocurre cuando se produce una falla grave o una condición de error que el sistema no puede manejar. Puede ser causada por divisiones por cero, acceso a memoria no válida o instrucciones ilegales, entre otros.
     
 Estas excepciones son consideradas prioritarias debido a su importancia en el funcionamiento del sistema y la necesidad de manejarlas de manera adecuada para garantizar la estabilidad y confiabilidad
 
 
 -- 10. Describa las funciones principales de la pila. ¿Cómo resuelve la arquitectura el llamado a funciones y su retorno?
+
+Su principal función es administrar la memoria para el almacenamiento temporal de datos y el manejo de llamadas a funciones.
+
+    - Almacenamiento temporal: La pila se utiliza para almacenar datos temporales, como variables locales, registros de activación de funciones y valores de retorno. Cada vez que se llama a una función, los datos locales y los registros de activación se almacenan en la pila para su uso durante la ejecución de la función.
+
+    - Gestión de llamadas a funciones: La pila se utiliza para administrar el flujo de ejecución cuando se realizan llamadas a funciones. Cuando se llama a una función, se almacena en la pila la dirección de retorno, que permite que el programa principal regrese a la ubicación correcta una vez que la función haya terminado su ejecución.
+
+    - Recuperación de contexto: La pila permite que el sistema recupere el contexto original después de la ejecución de una función. Cuando una función finaliza su ejecución, los datos almacenados en la pila, incluyendo la dirección de retorno, se recuperan y se restablece el contexto anterior para continuar con la ejecución del programa principal.
+    
+FUNCIONES Y RETORNO
+
+    - Antes de llamar a una función, se almacenan en la pila los datos necesarios, como la dirección de retorno y los parámetros de la función. Luego, se cambia el flujo de ejecución hacia la función llamada, comenzando desde la dirección de inicio de la función.
+
+    - Cuando una función finaliza su ejecución, se recupera la dirección de retorno almacenada en la pila. Esto permite que el programa principal continúe la ejecución a partir de la ubicación correcta donde se realizó la llamada a la función. Además, los datos locales y los registros de activación se eliminan de la pila, liberando así la memoria ocupada por la función.
 
 -- 11. Describa la secuencia de reset del microprocesador.
 
