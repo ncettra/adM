@@ -80,14 +80,14 @@ El uso de instrucciones de ejecución condicional, también conocidas como IT (I
     
 -- 9. Describa brevemente las excepciones más prioritarias (reset, NMI, Hardfault).
 
- Reset
-    El reset es la excepción más prioritaria y se produce al iniciar o reiniciar el sistema. Cuando se activa el reset, se borra la memoria y se restablecen los registros del procesador a sus valores iniciales. Es el punto de partida para la ejecución del programa y establece el estado inicial del sistema.
+ Reset:
+        El reset es la excepción más prioritaria y se produce al iniciar o reiniciar el sistema. Cuando se activa el reset, se borra la memoria y se restablecen los registros del procesador a sus valores iniciales. Es el punto de partida para la ejecución del programa y establece el estado inicial del sistema.
  
- NMI 
-    Se utiliza para eventos críticos que requieren una atención inmediata y no pueden ser bloqueados o deshabilitados.
+ NMI:
+        Se utiliza para eventos críticos que requieren una atención inmediata y no pueden ser bloqueados o deshabilitados.
  
- HardFault
-    Es una excepción que ocurre cuando se produce una falla grave o una condición de error que el sistema no puede manejar. Puede ser causada por divisiones por cero, acceso a memoria no válida o instrucciones ilegales, entre otros.
+ HardFault:
+        Es una excepción que ocurre cuando se produce una falla grave o una condición de error que el sistema no puede manejar. Puede ser causada por divisiones por cero, acceso a memoria no válida o instrucciones ilegales, entre otros.
     
 Estas excepciones son consideradas prioritarias debido a su importancia en el funcionamiento del sistema y la necesidad de manejarlas de manera adecuada para garantizar la estabilidad y confiabilidad
 
