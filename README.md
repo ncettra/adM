@@ -80,13 +80,49 @@ El uso de instrucciones de ejecución condicional, también conocidas como IT (I
     
 -- 9. Describa brevemente las excepciones más prioritarias (reset, NMI, Hardfault).
 
+
+    Reset:
+        - El reset es la excepción más prioritaria y se produce al iniciar o reiniciar el sistema. Cuando se activa el reset, se borra la memoria y se restablecen los registros del procesador a sus valores iniciales. Es el punto de partida para la ejecución del programa y establece el estado inicial del sistema.
+ 
+ 
+    NMI:
+        - Se utiliza para eventos críticos que requieren una atención inmediata y no pueden ser bloqueados o deshabilitados.
+ 
+
+    HardFault:
+        - Es una excepción que ocurre cuando se produce una falla grave o una condición de error que el sistema no puede manejar. Puede ser causada por divisiones por cero, acceso a memoria no válida o instrucciones ilegales, entre otros.
+    
+Estas excepciones son consideradas prioritarias debido a su importancia en el funcionamiento del sistema y la necesidad de manejarlas de manera adecuada para garantizar la estabilidad y confiabilidad
+
+
 -- 10. Describa las funciones principales de la pila. ¿Cómo resuelve la arquitectura el llamado a funciones y su retorno?
+
+Su principal función es administrar la memoria para el almacenamiento temporal de datos y el manejo de llamadas a funciones.
+
+    - Almacenamiento temporal: La pila se utiliza para almacenar datos temporales, como variables locales, registros de activación de funciones y valores de retorno. Cada vez que se llama a una función, los datos locales y los registros de activación se almacenan en la pila para su uso durante la ejecución de la función.
+
+    - Gestión de llamadas a funciones: La pila se utiliza para administrar el flujo de ejecución cuando se realizan llamadas a funciones. Cuando se llama a una función, se almacena en la pila la dirección de retorno, que permite que el programa principal regrese a la ubicación correcta una vez que la función haya terminado su ejecución.
+
+    - Recuperación de contexto: La pila permite que el sistema recupere el contexto original después de la ejecución de una función. Cuando una función finaliza su ejecución, los datos almacenados en la pila, incluyendo la dirección de retorno, se recuperan y se restablece el contexto anterior para continuar con la ejecución del programa principal.
+    
+FUNCIONES Y RETORNO
+
+    - Antes de llamar a una función, se almacenan en la pila los datos necesarios, como la dirección de retorno y los parámetros de la función. Luego, se cambia el flujo de ejecución hacia la función llamada, comenzando desde la dirección de inicio de la función.
+
+    - Cuando una función finaliza su ejecución, se recupera la dirección de retorno almacenada en la pila. Esto permite que el programa principal continúe la ejecución a partir de la ubicación correcta donde se realizó la llamada a la función. Además, los datos locales y los registros de activación se eliminan de la pila, liberando así la memoria ocupada por la función.
 
 -- 11. Describa la secuencia de reset del microprocesador.
 
+-   Hard Reset: El reset físico se produce cuando se aplica una señal de reinicio a nivel de hardware, como pulsar el botón de reinicio en un dispositivo. Esta señal se propaga a través del sistema y activa el circuito de reset interno del microprocesador.
+-   Soft Reset: Todos los registros internos del microprocesador se restablecen a sus valores iniciales. Esto incluye los registros de propósito general, registros de estado, registros de control, etc. La memoria principal, como la RAM y la memoria caché, se borra y se inicializa a un estado conocido. Esto garantiza que no haya datos residuales o basura almacenados en la memoria. Se establecen los modos de operación iniciales del microprocesador, como el modo privilegiado, el modo de interrupción, etc. Se establecen los registros especiales que controlan el comportamiento del microprocesador, como el registro de puntero de pila (SP) y el registro de dirección de programa (PC).
+
 -- 12. ¿Qué entiende por “core peripherals”? ¿Qué diferencia existe entre estos y el resto de los periféricos?
 
+Se refieren a los componentes periféricos esenciales que están integrados directamente en el núcleo del microcontrolador. Estos periféricos se consideran esenciales para el funcionamiento básico del procesador y su interacción con el entorno externo. Los periféricos externos son componentes adicionales que se pueden agregar según las necesidades del sistema. Los core peripherals son cruciales para las funciones básicas del procesador, mientras que los periféricos externos agregan funcionalidades específicas y amplían las capacidades del sistema.
+
 -- 13. ¿Cómo se implementan las prioridades de las interrupciones? Dé un ejemplo
+
+Las interrupciones se clasifican en diferentes niveles de prioridad. Cada interrupción se asigna a un nivel específico, donde un nivel más alto indica una prioridad más alta. Por ejemplo, puede haber niveles de prioridad que van desde 0 (la más alta) hasta n (la más baja), donde n es el número total de niveles de prioridad. Si se produce una interrupción de mayor prioridad mientras se está atendiendo una interrupción de menor prioridad, el controlador de interrupciones suspende temporalmente la rutina en curso y ejecuta la rutina de servicio de la interrupción de mayor prioridad. Una vez finalizada esta rutina, se reanuda la rutina anteriormente en curso.
 
 -- 14. ¿Qué es el CMSIS? ¿Qué función cumple? ¿Quién lo provee? ¿Qué ventajas aporta?
 El CMSIS es un estándar proporcionado por ARM que ofrece una capa de abstracción de hardware, bibliotecas y herramientas para facilitar el desarrollo de software embebido en microcontroladores Cortex-M. El uso del CMSIS mejora la portabilidad del software, aumenta la eficiencia y productividad, y garantiza la compatibilidad con herramientas de desarrollo.
@@ -102,12 +138,16 @@ Permite establecer políticas de protección y seguridad para la memoria y otros
 
 -- 19. ¿Cuántas regiones pueden configurarse como máximo? ¿Qué ocurre en caso de haber solapamientos de las regiones? ¿Qué ocurre con las zonas de memoria no cubiertas por las regiones definidas?
 
+En cortex M4 se pueden configurar un máximo de ocho regiones mediante la unidad de protección de memoria, en caso de que se produzcan solapamientos entre las regiones configuradas, la región con el número de región más bajo (es decir, la región definida primero) tendrá prioridad sobre las demás. Esto significa que si hay solapamientos entre las regiones configuradas, se aplicarán los atributos de la región con el número de región más bajo y los atributos de las regiones superpuestas de mayor número de región se ignorarán para esa porción de memoria. Las zonas de memoria no cubiertas (las no portegidas por la MPU) no estarán sujetas a las restricciones de acceso o atributos de protección definidos por las regiones configuradas. Estas zonas de memoria no cubiertas pueden utilizarse para almacenar datos o código sin restricciones de acceso o pueden ser asignadas para otros fines según las necesidades del sistema.
+
 -- 20. ¿Para qué se suele utilizar la excepción PendSV? ¿Cómo se relaciona su uso con el resto de las excepciones? Dé un ejemplo
+
+Se utiliza en sistemas operativos en tiempo real (RTOS) para realizar tareas de planificación y cambios de contexto. Su función principal es permitir la implementación de una operación de cambio de contexto del procesador de forma programada.
+Un ejemplo de uso es en un sistema con múltiples tareas o hilos en un RTOS. Cuando una tarea necesita ceder el procesador y permitir que otra tarea se ejecute, puede solicitar el cambio de contexto a través de la excepción PendSV. El kernel del RTOS atenderá la excepción PendSV, realizará el cambio de contexto y la siguiente tarea en la planificación del sistema se ejecutará en el procesador.
 
 -- 21. ¿Para qué se suele utilizar la excepción SVC? Expliquelo dentro de un marco de un sistema operativo embebido.
 
-
-
+Cuando un programa necesita realizar una operación que requiere privilegios o que solo puede ser realizada por el kernel del sistema operativo, puede generar una excepción SVC. Esto permite que la ejecución pase al kernel en modo privilegiado para manejar la solicitud (pueden incluir operaciones de gestión de memoria, creación y destrucción de tareas, sincronización, acceso a dispositivos de E/S, etc).
 
 
 # # ISA
