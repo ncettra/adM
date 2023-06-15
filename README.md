@@ -118,7 +118,11 @@ FUNCIONES Y RETORNO
 
 -- 12. ¿Qué entiende por “core peripherals”? ¿Qué diferencia existe entre estos y el resto de los periféricos?
 
+Se refieren a los componentes periféricos esenciales que están integrados directamente en el núcleo del microcontrolador. Estos periféricos se consideran esenciales para el funcionamiento básico del procesador y su interacción con el entorno externo. Los periféricos externos son componentes adicionales que se pueden agregar según las necesidades del sistema. Los core peripherals son cruciales para las funciones básicas del procesador, mientras que los periféricos externos agregan funcionalidades específicas y amplían las capacidades del sistema.
+
 -- 13. ¿Cómo se implementan las prioridades de las interrupciones? Dé un ejemplo
+
+Las interrupciones se clasifican en diferentes niveles de prioridad. Cada interrupción se asigna a un nivel específico, donde un nivel más alto indica una prioridad más alta. Por ejemplo, puede haber niveles de prioridad que van desde 0 (la más alta) hasta n (la más baja), donde n es el número total de niveles de prioridad. Si se produce una interrupción de mayor prioridad mientras se está atendiendo una interrupción de menor prioridad, el controlador de interrupciones suspende temporalmente la rutina en curso y ejecuta la rutina de servicio de la interrupción de mayor prioridad. Una vez finalizada esta rutina, se reanuda la rutina anteriormente en curso.
 
 -- 14. ¿Qué es el CMSIS? ¿Qué función cumple? ¿Quién lo provee? ¿Qué ventajas aporta?
 El CMSIS es un estándar proporcionado por ARM que ofrece una capa de abstracción de hardware, bibliotecas y herramientas para facilitar el desarrollo de software embebido en microcontroladores Cortex-M. El uso del CMSIS mejora la portabilidad del software, aumenta la eficiencia y productividad, y garantiza la compatibilidad con herramientas de desarrollo.
@@ -134,12 +138,16 @@ Permite establecer políticas de protección y seguridad para la memoria y otros
 
 -- 19. ¿Cuántas regiones pueden configurarse como máximo? ¿Qué ocurre en caso de haber solapamientos de las regiones? ¿Qué ocurre con las zonas de memoria no cubiertas por las regiones definidas?
 
+En cortex M4 se pueden configurar un máximo de ocho regiones mediante la unidad de protección de memoria, en caso de que se produzcan solapamientos entre las regiones configuradas, la región con el número de región más bajo (es decir, la región definida primero) tendrá prioridad sobre las demás. Esto significa que si hay solapamientos entre las regiones configuradas, se aplicarán los atributos de la región con el número de región más bajo y los atributos de las regiones superpuestas de mayor número de región se ignorarán para esa porción de memoria. Las zonas de memoria no cubiertas (las no portegidas por la MPU) no estarán sujetas a las restricciones de acceso o atributos de protección definidos por las regiones configuradas. Estas zonas de memoria no cubiertas pueden utilizarse para almacenar datos o código sin restricciones de acceso o pueden ser asignadas para otros fines según las necesidades del sistema.
+
 -- 20. ¿Para qué se suele utilizar la excepción PendSV? ¿Cómo se relaciona su uso con el resto de las excepciones? Dé un ejemplo
+
+Se utiliza en sistemas operativos en tiempo real (RTOS) para realizar tareas de planificación y cambios de contexto. Su función principal es permitir la implementación de una operación de cambio de contexto del procesador de forma programada.
+Un ejemplo de uso es en un sistema con múltiples tareas o hilos en un RTOS. Cuando una tarea necesita ceder el procesador y permitir que otra tarea se ejecute, puede solicitar el cambio de contexto a través de la excepción PendSV. El kernel del RTOS atenderá la excepción PendSV, realizará el cambio de contexto y la siguiente tarea en la planificación del sistema se ejecutará en el procesador.
 
 -- 21. ¿Para qué se suele utilizar la excepción SVC? Expliquelo dentro de un marco de un sistema operativo embebido.
 
-
-
+Cuando un programa necesita realizar una operación que requiere privilegios o que solo puede ser realizada por el kernel del sistema operativo, puede generar una excepción SVC. Esto permite que la ejecución pase al kernel en modo privilegiado para manejar la solicitud (pueden incluir operaciones de gestión de memoria, creación y destrucción de tareas, sincronización, acceso a dispositivos de E/S, etc).
 
 
 # # ISA
