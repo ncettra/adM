@@ -14,7 +14,7 @@
 .global asm_max32
 .global asm_downsampleM
 .global asm_invertir
-.global asm_introducirEco
+.global asm_eco
 .global asm_calcularCorrelacion
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -309,7 +309,7 @@ aca hardcodie algunas cosas como las muestras, pero podria introducirlas con r1
 */
 
 .thumb_func
-asm_introducirEco:
+asm_eco:
     push {r4}                   	// Guardar registros en la pila
     mov r4, r0                      // Puntero al vector de entrada
     mov r0, #4096                   // Longitud del vector (4096 muestras)

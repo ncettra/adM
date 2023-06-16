@@ -224,7 +224,7 @@ void invertir(uint16_t *vector, uint32_t longitud) {
     }
 }
 
-void introducirEco(int16_t *vector, uint32_t longitud) {
+void introducirEco(int16_t *vector,  int16_t *out,uint32_t longitud) {
     uint32_t tasaMuestreo = 44100;
     uint32_t retrasoMuestras = tasaMuestreo * 20 / 1000; // 20ms de retraso = 882
     int16_t mitadAmplitud = 0;
@@ -233,6 +233,8 @@ void introducirEco(int16_t *vector, uint32_t longitud) {
         mitadAmplitud = vector[i - retrasoMuestras] / 2; //retraso
         vector[i] += mitadAmplitud;
     }
+
+   // out = vector;
 }
 
 
@@ -306,6 +308,32 @@ int main(void)
 
 
 
+
+  int16_t muestras[4096];
+  int16_t muestras_eco[4096];
+
+  muestras[882] = 10;
+  muestras[883] = 20;
+  muestras[884] = 30;
+  muestras[885] = 40;
+
+
+
+  for(uint32_t i = 0; i< 4096; i++){
+	  muestras[i] = 0;
+  }
+
+ //prueba de eco
+
+
+
+  DWT->CYCCNT = 0;
+  asm_eco(muestras);
+  ciclosASM = DWT->CYCCNT;
+
+  DWT->CYCCNT = 0;
+  introducirEco(muestras, muestras_eco,4096);
+  ciclosC = DWT->CYCCNT;
 
 
 
