@@ -5,7 +5,17 @@
 @ Simbolos exportados
 .global asm_svc
 .global asm_sum
-
+.global asm_zeros
+.global asm_productoEscalar32
+.global asm_productoEscalar16
+.global asm_productoEscalar12
+.global asm_filtroVentana10
+.global asm_pack32to16
+.global asm_max32
+.global asm_downsampleM
+.global asm_invertir
+.global asm_introducirEco
+.global asm_calcularCorrelacion
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
@@ -55,7 +65,6 @@ Parametros:
    r1: longitud (longitud)
 
 */
-
 .thumb_func
 	asm_zeros:
 	    cbz r0, exit_1   			// Salto a la etiqueta exit si r0 es cero

@@ -130,12 +130,12 @@ void zeros(uint32_t *vector, uint32_t longitud) {
 }
 
 //optimizado, dsp aplicar en todos.....:
-/*
-void zeros(uint32_t *vector, uint32_t longitud) {
+
+void zeros_optimizada(uint32_t *vector, uint32_t longitud) {
     for (; longitud >0; longitud--) {
         vector[longitud-1] = 0;
     }
-}*/
+}
 
 
 void productoEscalar32(uint32_t *vectorIn, uint32_t *vectorOut, uint32_t longitud, uint32_t escalar) {
@@ -284,7 +284,7 @@ int main(void)
   PrivilegiosSVC ();
   DWT->CTRL |= 1 << DWT_CTRL_CYCCNTENA_Pos; //activar el contador
 
-  uint32_t ciclos_C, ciclos_ASM;
+  uint32_t ciclosASM,ciclosC,ciclosC2;
 
   //const uint32_t Resultado = asm_sum (5, 3);
 
@@ -292,11 +292,18 @@ int main(void)
 
   DWT->CYCCNT = 0;
   asm_zeros(resultado, 10);
-  ciclos_ASM = DWT->CYCCNT;
+  ciclosASM = DWT->CYCCNT;
 
   DWT->CYCCNT = 0;
   zeros(resultado, 10);
-  ciclos_C = DWT->CYCCNT;
+  ciclosC = DWT->CYCCNT;
+
+
+  DWT->CYCCNT = 0;
+  zeros_optimizada(resultado, 10); //sin usar i en la iteracion
+  ciclosC2 = DWT->CYCCNT;
+  //zeros(resultado, 10);
+
 
 
 
