@@ -312,11 +312,6 @@ int main(void)
   int16_t muestras[4096];
   int16_t muestras_eco[4096];
 
-  muestras[882] = 10;
-  muestras[883] = 20;
-  muestras[884] = 30;
-  muestras[885] = 40;
-
 
 
   for(uint32_t i = 0; i< 4096; i++){
@@ -324,6 +319,15 @@ int main(void)
   }
 
  //prueba de eco
+
+  muestras[0] = 10;
+  muestras[1] = 15;
+  muestras[2] = 20;
+  muestras[3] = 25;
+  muestras[882] = 10;
+  muestras[883] = 20;
+  muestras[884] = 30;
+  muestras[885] = 40;
 
 
 
