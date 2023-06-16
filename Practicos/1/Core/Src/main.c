@@ -121,6 +121,125 @@ static void PrivilegiosSVC (void)
 
     // Fin del ejemplo de SVC
 }
+
+
+void zeros(uint32_t *vector, uint32_t longitud) {
+    for (uint32_t i = 0; i < longitud; i++) {
+        vector[i] = 0;
+    }
+}
+
+
+void productoEscalar32(uint32_t *vectorIn, uint32_t *vectorOut, uint32_t longitud, uint32_t escalar) {
+    for (uint32_t i = 0; i < longitud; i++) {
+        vectorOut[i] = vectorIn[i] * escalar;
+    }
+}
+
+void productoEscalar16(uint16_t *vectorIn, uint16_t *vectorOut, uint32_t longitud, uint16_t escalar) {
+    for (uint32_t i = 0; i < longitud; i++) {
+        vectorOut[i] = vectorIn[i] * escalar;
+    }
+}
+
+void productoEscalar12(uint16_t *vectorIn, uint16_t *vectorOut, uint32_t longitud, uint16_t escalar) {
+    for (uint32_t i = 0; i < longitud; i++) {
+        uint32_t resultado = (uint32_t)vectorIn[i] * (uint32_t)escalar;
+        if (resultado > 0xFFF) {
+            vectorOut[i] = 0xFFF; // Saturación a 12 bits
+        } else {
+            vectorOut[i] = (uint16_t)resultado;
+        }
+    }
+}
+
+void filtroVentana10(uint16_t *vectorIn, uint16_t *vectorOut, uint32_t longitudVectorIn) {
+
+	uint32_t suma = 0;
+    uint32_t elementos = 0;
+
+    for (uint32_t i = 0; i < longitudVectorIn; i++) {
+
+
+        // Sumar los valores de la ventana actual
+        for (int j = i - 9; j <= i; j++) {
+            if (j >= 0) {
+                suma += vectorIn[j];
+                elementos++;
+            }
+        }
+
+        // Calcular el promedio de la ventana
+        vectorOut[i] = suma / elementos;
+    }
+}
+
+void pack32to16(int32_t *vectorIn, int16_t *vectorOut, uint32_t longitud) {
+    for (uint32_t i = 0; i < longitud; i++) {
+        vectorOut[i] = (int16_t)(vectorIn[i] >> 16);
+    }
+}
+
+int32_t max(int32_t *vectorIn, uint32_t longitud) {
+    int32_t maxValor = vectorIn[0];
+    uint32_t maxPosicion = 0;
+
+    for (uint32_t i = 1; i < longitud; i++) {
+        if (vectorIn[i] > maxValor) {
+            maxValor = vectorIn[i];
+            maxPosicion = i;
+        }
+    }
+
+    return maxPosicion;
+}
+
+
+void downsampleM(int32_t *vectorIn, int32_t *vectorOut, uint32_t longitud, uint32_t N) {
+    uint32_t indiceSalida = 0;
+
+    for (uint32_t i = 0; i < longitud; i += N) {
+        vectorOut[indiceSalida] = vectorIn[i];
+        indiceSalida++;
+    }
+}
+
+void invertir(uint16_t *vector, uint32_t longitud) {
+    uint32_t i = 0;
+    uint32_t j = longitud - 1;
+
+    while (i < j) {
+        uint16_t temp = vector[i]; //aca uso temp como variable auxiliar onda metodo de ordenamiento de la burbuja
+        vector[i] = vector[j];
+        vector[j] = temp;
+        i++;
+        j--;
+    }
+}
+
+void introducirEco(int16_t *vector, uint32_t longitud) {
+    uint32_t tasaMuestreo = 44100;
+    uint32_t retrasoMuestras = tasaMuestreo * 20 / 1000; // 20ms de retraso = 882
+    int16_t mitadAmplitud = 0;
+
+    for (uint32_t i = retrasoMuestras; i < longitud; i++) {
+        mitadAmplitud = vector[i - retrasoMuestras] / 2; //retraso
+        vector[i] += mitadAmplitud;
+    }
+}
+
+
+void corr(int16_t *vectorX, int16_t *vectorY, int16_t *vectorCorr, uint32_t longitud) {
+    for (uint32_t lag = 0; lag < longitud; lag++) {
+        int32_t sum = 0;
+
+        for (uint32_t i = 0; i < longitud - lag; i++) {
+            sum += (int32_t)vectorX[i] * (int32_t)vectorY[i + lag];
+        }
+
+        vectorCorr[lag] = (int16_t)(sum / longitud);
+    }
+}
 /* USER CODE END 0 */
 
 /**
