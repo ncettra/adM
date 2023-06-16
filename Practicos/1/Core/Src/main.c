@@ -45,7 +45,7 @@ ETH_TxPacketConfig TxConfig;
 ETH_DMADescTypeDef  DMARxDscrTab[ETH_RX_DESC_CNT]; /* Ethernet Rx DMA Descriptors */
 ETH_DMADescTypeDef  DMATxDscrTab[ETH_TX_DESC_CNT]; /* Ethernet Tx DMA Descriptors */
 
- ETH_HandleTypeDef heth;
+ETH_HandleTypeDef heth;
 
 UART_HandleTypeDef huart3;
 
@@ -129,9 +129,17 @@ void zeros(uint32_t *vector, uint32_t longitud) {
     }
 }
 
+//optimizado, dsp aplicar en todos.....:
+/*
+void zeros(uint32_t *vector, uint32_t longitud) {
+    for (; longitud >0; longitud--) {
+        vector[longitud-1] = 0;
+    }
+}*/
+
 
 void productoEscalar32(uint32_t *vectorIn, uint32_t *vectorOut, uint32_t longitud, uint32_t escalar) {
-    for (uint32_t i = 0; i < longitud; i++) {
+    for (uint32_t i = 0; i < longitud; i++) { //en clase no utilizaron la variable auxiliar i,
         vectorOut[i] = vectorIn[i] * escalar;
     }
 }
@@ -193,7 +201,6 @@ int32_t max(int32_t *vectorIn, uint32_t longitud) {
 
     return maxPosicion;
 }
-
 
 void downsampleM(int32_t *vectorIn, int32_t *vectorOut, uint32_t longitud, uint32_t N) {
     uint32_t indiceSalida = 0;
@@ -275,8 +282,27 @@ int main(void)
   MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
   PrivilegiosSVC ();
+  DWT->CTRL |= 1 << DWT_CTRL_CYCCNTENA_Pos; //activar el contador
 
-  const uint32_t Resultado = asm_sum (5, 3);
+  uint32_t ciclos_C, ciclos_ASM;
+
+  //const uint32_t Resultado = asm_sum (5, 3);
+
+  uint32_t resultado[10] = {10,20,10,40,50,60,20,10,20,40};
+
+  DWT->CYCCNT = 0;
+  asm_zeros(resultado, 10);
+  ciclos_ASM = DWT->CYCCNT;
+
+  DWT->CYCCNT = 0;
+  zeros(resultado, 10);
+  ciclos_C = DWT->CYCCNT;
+
+
+
+
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -460,6 +486,8 @@ static void MX_USB_OTG_FS_PCD_Init(void)
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
+/* USER CODE BEGIN MX_GPIO_Init_1 */
+/* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
@@ -501,6 +529,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(USB_OverCurrent_GPIO_Port, &GPIO_InitStruct);
 
+/* USER CODE BEGIN MX_GPIO_Init_2 */
+/* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */

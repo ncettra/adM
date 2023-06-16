@@ -131,15 +131,15 @@ Parametros:
 */
 .thumb_func
 asm_productoEscalar12:
-	    push {r4}              		// Guardar registros en la pila
+	    push {r4,r5}              		// Guardar registros en la pila
 	loop_4:
 	    ldrh r4, [r0, r2, LSL #1]   // Cargar valor de medio palabra (16 bits) en r4
-	    mul r4, r4, r3              // Multiplicar r4 por el escalar r3
-	    usat r4, #12                // Saturar el resultado a 12 bits
+	    mul r5, r4, r3              // Multiplicar r4 por el escalar r3 y lo tiro en r5
+	    usat r4, #12, r5               // Saturar el resultado a 12 bits
 	    strh r4, [r1, r2, LSL #1]   // Almacenar el resultado en memoria
 	    subs r2, #1                 // Decrementar r2
 	    bne loop_4                  // Mientras r2 > 0
-	    pop {r4}               		// Recuperar registros y retornar
+	    pop {r4,r5}               		// Recuperar registros y retornar
 	    bx lr
 /*
 5) Realice una función que implemente un filtro de ventana móvil de 10 valores sobre un vector de muestras
@@ -193,6 +193,11 @@ loop_6:
 7) Realizar una función que reciba un vector de números signados de 32 bits y devuelva la posición del máximo del vector.
 
 prototipo: int32_t max (int32_t * vectorIn, uint32_t longitud);
+	r0: Vector IN
+	r1: Vector OUT
+	r2:longitud del vector
+
+
 */
 
 .thumb_func
@@ -222,6 +227,12 @@ update_max:
 8) Realizar una función que reciba un vector de muestras signadas de 32 bits y lo decime descartando una cada N muestras.
 
 prototipo: void downsampleM (int32_t * vectorIn, int32_t * vectorOut, uint32_t longitud, uint32_t N);
+
+r0: VectorIN
+r1: VectorOut
+r2 longitud
+r3: N saltos
+
 */
 
 .thumb_func
@@ -247,7 +258,16 @@ skip_8:
 9) Realizar una función que reciba un vector de muestras no signadas de 16 bits e invierta su orden.
 
 prototipo: void invertir (uint16_t * vector, uint32_t longitud);
+
+r0: Vector
+r1: longitud
+
 */
+
+
+//PUEDO UTILIZAR EL REV directamente!!!!
+
+
 .thumb_func
 asm_invertir:
     mov r3, r0                      // Puntero al vector de entrada
@@ -273,6 +293,10 @@ Variante: Una vez implementada la función, programar una nueva versión que uti
 
 SON 882 muestras porque por un lado el sampleo es de 44100 m/s => 0.0227 ms por cada muetra. Por ende en 20ms de retraso, hay 882 muetras (20ms/0.0227ms)
 
+r0: VectorIN
+
+aca hardcodie algunas cosas como las muestras, pero podria introducirlas con r1
+
 */
 
 .thumb_func
@@ -297,25 +321,6 @@ loop_10:
 
 //VARIANTE SIMD
 
-asm_introducirEco_SIMD:
-    push {r4, r5, r6}           	// Guardar registros en la pila
-    mov r4, r0                      // Puntero al vector de entrada
-    mov r0, #4096                   // Longitud del vector (4096 muestras)
-    mov r1, #882                    // Cantidad de muestras para el eco (20 ms / 0.0227 ms por muestra = 882 muestras)
-    lsl r2, r0, #1                  // Calcular el número total de bytes en el vector (longitud * 2 bytes por muestra)
-    add r2, r4, r2                  // Calcular la dirección del último elemento del vector
-    sub r3, r2, r1                  // Calcular la dirección del inicio del eco (retrocediendo 882 muestras)
-    vldr.32 d0, [r3]                // Cargar muestra del eco a registros SIMD
-    vshr.s16 q0, q0, #1             // Dividir las muestras del eco por dos
-loop_10_2:
-    vld1.16 d1, [r4]                // Cargar 2 muestras originales a registros SIMD
-    vadd.s16 q1, q1, q0             // Sumar las muestras originales y las muestras del eco
-    vst1.16 d2, [r4]!               // Almacenar 2 muestras sumadas en el vector original y avanzar 4 bytes
-    subs r0, r0, #2                 // Decrementar contador de longitud en 2 (2 muestras por iteración)
-    cmp r0, #0                      // Comparar contador con cero
-    bne loop_10_2                   // Repetir mientras contador no sea cero
-    pop {r4, r5, r6}            	// Recuperar registros y retornar
-    bx lr
 
 
 /*
@@ -353,31 +358,4 @@ loop_11:
 
 // con simd
 
-.thumb_func
-asm_calcularCorrelacion_SIMD:
-    push {r4, r5, r6, r7}       	// Guardar registros en la pila
-    mov r4, r0                      // Puntero al primer vector
-    mov r5, r1                      // Puntero al segundo vector
-    mov r6, r2                      // Longitud de los vectores
-    mov r7, r6                      // Copiar la longitud para usarla como contador
-    vdup.32 q0, r6                  // Cargar la longitud en un registro SIMD
-    ldm r4, {d0-d3}                 // Cargar los primeros 8 elementos del primer vector en registros SIMD
-    ldm r5, {d4-d7}                 // Cargar los primeros 8 elementos del segundo vector en registros SIMD
-    vmul.i32 q1, q0, d0             // Multiplicar los valores de los vectores por la longitud
-    vmla.i32 q1, q0, d4             // Acumular el resultado de la multiplicación
-loop_11_2:
-    add r4, r4, #32                 // Avanzar al siguiente grupo de 8 elementos del primer vector (incrementar en 32 bytes)
-    add r5, r5, #32                 // Avanzar al siguiente grupo de 8 elementos del segundo vector (incrementar en 32 bytes)
-    subs r7, r7, #8                 // Decrementar el contador de longitud en 8
-    cmp r7, #0                      // Comparar el contador con cero
-    beq endloop_11                  // Salir del bucle si el contador es cero
-    vldm r4, {d0-d3}                // Cargar los siguientes 8 elementos del primer vector en registros SIMD
-    vldm r5, {d4-d7}                // Cargar los siguientes 8 elementos del segundo vector en registros SIMD
-    vmla.i32 q1, q0, d0             // Multiplicar y acumular los nuevos valores
-    b loop_11_2                     // Repetir el bucle
-endloop_11:
-    vpadd.i32 d0, d2, d1            // Sumar las partes bajas y altas del registro SIMD
-    vpadd.i32 d0, d0, d0            // Sumar los resultados parciales
-    vmov r2, s0                     // Mover el resultado final a un registro general
-    pop {r4, r5, r6, r7}        	// Recuperar registros y retornar
-    bx lr
+
