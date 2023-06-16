@@ -47,6 +47,7 @@
 
 /*
 1) Realizar una función que inicialice un vector con ceros. La función debe tener el siguiente
+
 prototipo: void zeros (uint32_t * vector, uint32_t longitud);
 
 Parametros:
@@ -141,8 +142,7 @@ asm_productoEscalar12:
 	    pop {r4}               		// Recuperar registros y retornar
 	    bx lr
 /*
-5) Realice una función que implemente un filtro de ventana móvil de 10 valores sobre un vector de
-muestras
+5) Realice una función que implemente un filtro de ventana móvil de 10 valores sobre un vector de muestras
 
 prototipo: void filtroVentana10(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitudVectorIn);
 
@@ -190,13 +190,10 @@ loop_6:
     bx lr
 
 /*
-7) Realizar una función que reciba un vector de números signados de 32 bits y devuelva la posición
-del máximo del vector.
+7) Realizar una función que reciba un vector de números signados de 32 bits y devuelva la posición del máximo del vector.
 
 prototipo: int32_t max (int32_t * vectorIn, uint32_t longitud);
-
 */
-
 
 .thumb_func
 asm_max32:
@@ -221,13 +218,10 @@ update_max:
     mov r1, r0                      // Actualizar posición máxima con el contador
     b loop_7                        // Continuar con el bucle
 
-
 /*
-8) Realizar una función que reciba un vector de muestras signadas de 32 bits y lo decime
-descartando una cada N muestras.
+8) Realizar una función que reciba un vector de muestras signadas de 32 bits y lo decime descartando una cada N muestras.
 
 prototipo: void downsampleM (int32_t * vectorIn, int32_t * vectorOut, uint32_t longitud, uint32_t N);
-
 */
 
 .thumb_func
@@ -249,12 +243,10 @@ skip_8:
     bne loop_8                      // Repetir mientras contador de longitud no sea cero
     pop {r4, r5}                	// Recuperar registros y retornar
     bx lr
-
 /*
 9) Realizar una función que reciba un vector de muestras no signadas de 16 bits e invierta su orden.
 
 prototipo: void invertir (uint16_t * vector, uint32_t longitud);
-
 */
 .thumb_func
 asm_invertir:
@@ -270,18 +262,14 @@ loop_9:
     cmp r0, #0                      // Comparar contador con cero
     bne loop_9                      // Repetir mientras contador no sea cero
     bx lr
-
-
 /*
-10) Realizar una función que recibe un vector de 4096 valores de 16 bits (signados), que
-corresponden a muestras de audio tomadas a una tasa de muestreo de 44.100 muestras/s. La función
-debe introducir un “eco” de la mitad de la amplitud de la muestra original a los 20ms de comenzada
-la grabación.
-Nota: El eco consiste en adicionar a la señal original, la propia señal original dividida por dos y
-atrasada en 20ms, como muestra la ilustración debajo. Por qué la cantidad de muestras copiadas
-iguales es de 882?
-Variante: Una vez implementada la función, programar una nueva versión que utilice las
-instrucciones SIMD para optimizar la ejecución del algoritmo.
+10) Realizar una función que recibe un vector de 4096 valores de 16 bits (signados), que corresponden a muestras de audio tomadas a una tasa de muestreo de 44.100 muestras/s. La función
+debe introducir un “eco” de la mitad de la amplitud de la muestra original a los 20ms de comenzada la grabación.
+
+Nota: El eco consiste en adicionar a la señal original, la propia señal original dividida por dos y atrasada en 20ms, como muestra la ilustración debajo.
+Por qué la cantidad de muestras copiadas iguales es de 882?
+
+Variante: Una vez implementada la función, programar una nueva versión que utilice las instrucciones SIMD para optimizar la ejecución del algoritmo.
 
 SON 882 muestras porque por un lado el sampleo es de 44100 m/s => 0.0227 ms por cada muetra. Por ende en 20ms de retraso, hay 882 muetras (20ms/0.0227ms)
 
@@ -331,12 +319,10 @@ loop_10_2:
 
 
 /*
-11) La correlación cruzada (del inglés cross correlation) es una operación usada para estudiar el
-grado de similitud de dos señales y su fase relativa, aún en presencia de ruido. La correlación de dos
+11) La correlación cruzada (del inglés cross correlation) es una operación usada para estudiar el grado de similitud de dos señales y su fase relativa, aún en presencia de ruido. La correlación de dos
 funciones da como resultado una nueva función llamada función de correlación.
 
-Realizar una función que calcule la correlación entre dos vectores. Luego optimice utilizando
-instrucciones SIMD.
+Realizar una función que calcule la correlación entre dos vectores. Luego optimice utilizando instrucciones SIMD.
 
 prototipo: void corr (int16_t *vectorX, int16_t * vector Y, int16_t vectorCorr, uint32_t longitud)
 
@@ -395,4 +381,3 @@ endloop_11:
     vmov r2, s0                     // Mover el resultado final a un registro general
     pop {r4, r5, r6, r7}        	// Recuperar registros y retornar
     bx lr
-
