@@ -76,7 +76,10 @@ Un modelo de registros ortogonal permite que los registros de un procesador sean
 
 El uso de instrucciones de ejecución condicional, también conocidas como IT (If-Then), ofrece varias ventajas en términos de eficiencia y ahorro de código en la programación en lenguaje Assembly
 
-    FALTA EL EJEMPLO!! buscar en el set
+    ITTE NE
+    ANDNE r0,r0,r1
+    ADDNE r2,r2,#1
+    MOVEQ r2,r3
     
 -- 9. Describa brevemente las excepciones más prioritarias (reset, NMI, Hardfault).
 
