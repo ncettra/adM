@@ -57,14 +57,12 @@
 
 /*
 1) Realizar una función que inicialice un vector con ceros. La función debe tener el siguiente
-
 prototipo: void zeros (uint32_t * vector, uint32_t longitud);
-
 Parametros:
    r0: dirección del vector (vector)
    r1: longitud (longitud)
-
 */
+
 .thumb_func
 	asm_zeros:
 	    cbz r0, exit_1   			// Salto a la etiqueta exit si r0 es cero
@@ -80,57 +78,49 @@ Parametros:
 
 /*
 2) Realizar una función que realice el producto de un vector y un escalar (por ejemplo, podría servir para cambiar el nivel de amplitud de una señal).
-
 prototipo: void productoEscalar32 (uint32_t * vectorIn, uint32_t * vectorOut uint32_t longitud, uint32_t escalar);
-
 Parametros:
    	r0: Vector IN (direccion)
    	r1: Vector OUT (direccion)
 	r2: longitud
 	r3: escalar a multiplicar
-
 */
 
 .thumb_func
     asm_productoEscalar32:
-    	push {r4-r8}				//guarda los registros r4 a r8 en la pila
+    	push {r4}					//guarda r4 en la pila
     loop_2:
     	subs r2, #1 				//decrementamos la longitud
     	ldr r4, [r0, r2, LSL #2] 	//cargamos un valor de 32bits en el r4 y lo desplazamos
     	mul r4, r4, r3 			 	//multiplica r4 por el escalar en r3
     	str r4, [r1, r2, LSL #2] 	//guardamos el resultado de la multiplicacion
     	bne loop_2
-    	pop {r4-r8}					//restaura los valores previos de los registros
+    	pop {r4}					//restaura los valores previos de los registros
         bx lr
 /*
 3) Adapte la función del ejercicio 2 para realizar operaciones sobre vectores de 16 bits
-
 prototipo: void productoEscalar16 (uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint16_t escalar);
-
 Parametros:
    	r0: Vector IN (direccion)
    	r1: Vector OUT (direccion)
 	r2: longitud
 	r3: escalar a multiplicar
-
 */
 //NOTA EL H INDICA EL THUMB de 16bits
 .thumb_func
     asm_productoEscalar16:
     	push {r4}			   		//guardo r4 en pila
     loop_3:
-    	ldrh r3, [r0, r2, LSL #1]   // Cargar valor de medio palabra (16 bits) en r3
-    	mul r3, r3, r1              // Multiplicar r3 por el escalar r1
-    	strh r3, [r0, r2, LSL #1]   // Sobrescribir el valor original en memoria
-		subs r2, #1				    //decremento la longitud en 1
-    	bne loop_3
-    	pop {r4}
-    	bx lr
+    	ldrh r4, [r0, r2, LSL #1] 	//cargamos un valor de 32bits en el r4 y lo desplazamos
+    	mul r4, r4, r3 			 	//multiplica r4 por el escalar en r3
+    	strh r4, [r1, r2, LSL #1] 	//guardamos el resultado de la multiplicacion
+    	subs r2, #1 				//decrementamos la longitud
+    	bne loop_2
+    	pop {r4}					//restaura los valores previos de los registros
+        bx lr
 /*
 4) Adapte la función del ejercicio 3 para saturar el resultado del producto a 12 bits:
-
 prototipo: void productoEscalar12 (uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint16_t escalar);
-
 Parametros:
    	r0: Vector IN (direccion)
    	r1: Vector OUT (direccion)
@@ -140,21 +130,19 @@ Parametros:
 */
 .thumb_func
 asm_productoEscalar12:
-	    push {r4,r5}              		// Guardar registros en la pila
+	    push {r4,r5}              	// Guardar registros en la pila
 	loop_4:
 	    ldrh r4, [r0, r2, LSL #1]   // Cargar valor de medio palabra (16 bits) en r4
 	    mul r5, r4, r3              // Multiplicar r4 por el escalar r3 y lo tiro en r5
-	    usat r4, #12, r5               // Saturar el resultado a 12 bits
+	    usat r4, #12, r5            // Saturar el resultado a 12 bits
 	    strh r4, [r1, r2, LSL #1]   // Almacenar el resultado en memoria
 	    subs r2, #1                 // Decrementar r2
 	    bne loop_4                  // Mientras r2 > 0
-	    pop {r4,r5}               		// Recuperar registros y retornar
+	    pop {r4,r5}               	// Recuperar registros y retornar
 	    bx lr
 /*
 5) Realice una función que implemente un filtro de ventana móvil de 10 valores sobre un vector de muestras
-
 prototipo: void filtroVentana10(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitudVectorIn);
-
 */
 .thumb_func
 asm_filtroVentana10:
@@ -179,7 +167,6 @@ loop_5:
 /*
 6) Realizar una función que reciba un vector de números signados de 32 bits y los “empaquete” en
 otro vector de 16 bits. La función deberá adecuar los valores de entrada a la nueva precisión.
-
 prototipo: void pack32to16 (int32_t * vectorIn, int16_t *vectorOut, uint32_t longitud);
 
 */
@@ -200,135 +187,131 @@ loop_6:
 
 /*
 7) Realizar una función que reciba un vector de números signados de 32 bits y devuelva la posición del máximo del vector.
-
 prototipo: int32_t max (int32_t * vectorIn, uint32_t longitud);
 	r0: Vector IN
-	r1: Vector OUT
-	r2:longitud del vector
-
-
+	r1:longitud del vector
+	retorno: la posicion del valor maximo en int32
 */
 
 .thumb_func
 asm_max32:
-    push {r4, r5}               	// Guardar registros en la pila
-    mov r4, r0                      // Puntero al vector de entrada
-    mov r0, r1                      // Longitud del vector
-    ldr r5, [r4], #4                // Cargar primer valor del vector
-    mov r1, #0                      // Inicializar posición máxima a cero
-    mov r2, r0                      // Inicializar contador a longitud del vector
+    push {r4}
+    sub r1, #1
+    ldr r2, [r0, r1, LSL #2]    // Se guarda el primer valor para comparar
+    mov r3, r1                 	// Se guarda el índice
+    subs r1, #1
 loop_7:
-    ldr r3, [r4], #4                // Cargar siguiente valor del vector
-    cmp r3, r5                      // Comparar valor con el máximo actual
-    bgt update_max                  // Saltar si el valor es mayor al máximo actual
-    subs r2, r2, #1                 // Decrementar contador
-    bne loop_7                      // Repetir mientras contador no sea cero
-exit_7:
-    mov r0, r1                      // Devolver posición del máximo en r0
-    pop {r4, r5}                	// Recuperar registros y retornar
-    bx lr
-update_max:
-    mov r5, r3                      // Actualizar máximo con el nuevo valor
-    mov r1, r0                      // Actualizar posición máxima con el contador
-    b loop_7                        // Continuar con el bucle
+    ldr r4, [r0, r1, LSL #2]    // Se carga siguiente valor para comparar
+    cmp r4, r2                 	// Se compara con el valor cargado previo
+    bgt greater_than           	// Salta a greater_than si r4 > r2
+    subs r1, #1
+    bne loop_7                 	// Vuelve al bucle si no se ha recorrido todo el vector
+    b end
+greater_than:
+    mov r2, r4                 	// Si el nuevo valor es mayor, se almacena en r2 para volver a comparar
+    mov r3, r1                 	// Se guarda el índice
+    subs r1, #1
+    bne loop_7                 	// Vuelve al bucle si no se ha recorrido todo el vector
+end:
+    pop {r4}
+    mov r0, r3                 	// Se guarda el valor de retorno
+    bx lr                      	// Colocar el resultado en el registro de retorno
 
 /*
 8) Realizar una función que reciba un vector de muestras signadas de 32 bits y lo decime descartando una cada N muestras.
-
 prototipo: void downsampleM (int32_t * vectorIn, int32_t * vectorOut, uint32_t longitud, uint32_t N);
-
-r0: VectorIN
-r1: VectorOut
-r2 longitud
-r3: N saltos
-
+	r0: VectorIN
+	r1: VectorOut
+	r2 longitud
+	r3: N saltos
 */
 
 .thumb_func
 asm_downsampleM:
-    push {r4, r5}               	// Guardar registros en la pila
-    mov r4, r0                      // Puntero al vector de entrada
-    mov r5, r1                      // Puntero al vector de salida
-    mov r0, r2                      // Longitud del vector
-    mov r1, r3                      // Valor de N
-    mov r3, #0                      // Inicializar contador
-loop_8:
-    ldr r2, [r4], #4                // Cargar siguiente muestra del vector de entrada
-    cmp r3, r1                      // Comparar contador con N
-    beq skip_8                      // Saltar si el contador es igual a N
-    str r2, [r5], #4                // Almacenar muestra en el vector de salida
-    add r3, r3, #1                  // Incrementar contador
-skip_8:
-    subs r0, r0, #1                 // Decrementar contador de longitud
-    bne loop_8                      // Repetir mientras contador de longitud no sea cero
-    pop {r4, r5}                	// Recuperar registros y retornar
+    push {r4-r6}
+    mov r4, #0                   // i = 0
+    mov r5, #0                   // j = 0
+loop:
+    ldr r6, [r0, r4, LSL #2]     // Cargar muestra de vectorIn
+    str r6, [r1, r5, LSL #2]     // Almacenar muestra en vectorOut
+    add r4, r4, r3               // Incrementar i por N
+    add r5, r5, #1               // Incrementar j
+    cmp r4, r2                   // Comparar i con longitud
+    blt loop                     // Volver al bucle si i < longitud
+    pop {r4-r6}
     bx lr
 /*
 9) Realizar una función que reciba un vector de muestras no signadas de 16 bits e invierta su orden.
-
 prototipo: void invertir (uint16_t * vector, uint32_t longitud);
-
-r0: Vector
-r1: longitud
-
+	r0: Vector
+	r1: longitud
 */
-
-
-//PUEDO UTILIZAR EL REV directamente!!!!
-
 
 .thumb_func
 asm_invertir:
-    mov r3, r0                      // Puntero al vector de entrada
-    mov r0, r1                      // Longitud del vector
-    lsl r1, r1, #1                  // Calcular el número total de bytes
-    add r1, r3, r1                  // Calcular la dirección del último elemento
-loop_9:
-    ldrh r2, [r1]                   // Cargar muestra del último elemento
-    strh r2, [r3], #-2              // Almacenar muestra en la dirección actual y retroceder 2 bytes
+push {r4}
+    	mov r2, #0  				// posicion 0, en r1 tengo el otro extremo
+    loop_9:
+    	subs r1, #1
 
-    subs r0, r0, #1                 // Decrementar contador de longitud
-    cmp r0, #0                      // Comparar contador con cero
-    bne loop_9                      // Repetir mientras contador no sea cero
-    bx lr
+    	ldrh r3, [r0, r2, LSL #1]  	// !--->   !
+    	ldrh r4, [r0, r1, LSL #1]  	// !   <---!
+
+    	cmp r1, r2 					//verifico que el indice izq sea distinto al derecho
+
+		itte hi 					// uso el if and then con doble condicionante
+		strhhi r3, [r0, r1, LSL #1]	// Intercambio valores de los extremos
+		strhhi r4, [r0, r2, LSL #1]
+		bls exit_9					// Se ejecuta hasta que las posiciones de r2 y r1 se solapen
+
+    	add r2, #1 					// de un lado decresco y de este crezco (es más facil verlo en la funcion en C)
+		bne loop_9
+    exit_9:
+    	pop {r4}
+        bx lr
+
 /*
 10) Realizar una función que recibe un vector de 4096 valores de 16 bits (signados), que corresponden a muestras de audio tomadas a una tasa de muestreo de 44.100 muestras/s. La función
 debe introducir un “eco” de la mitad de la amplitud de la muestra original a los 20ms de comenzada la grabación.
-
 Nota: El eco consiste en adicionar a la señal original, la propia señal original dividida por dos y atrasada en 20ms, como muestra la ilustración debajo.
 Por qué la cantidad de muestras copiadas iguales es de 882?
-
 Variante: Una vez implementada la función, programar una nueva versión que utilice las instrucciones SIMD para optimizar la ejecución del algoritmo.
+
 
 SON 882 muestras porque por un lado el sampleo es de 44100 m/s => 0.0227 ms por cada muetra. Por ende en 20ms de retraso, hay 882 muetras (20ms/0.0227ms)
 
-r0: VectorIN
 
-aca hardcodie algunas cosas como las muestras, pero podria introducirlas con r1
-
+	r0: VectorIN
+	r1: VectorOUT
+	aca hardcodie algunas cosas como las muestras, pero podria introducirlas y calcular mas cosas en funcion de los parametros
 */
 
 .thumb_func
 asm_eco:
-    push {r4}                   	// Guardar registros en la pila
-    mov r4, r0                      // Puntero al vector de entrada
-    mov r0, #4096                   // Longitud del vector (4096 muestras)
-    mov r1, #882                    // Cantidad de muestras para el eco (20 ms / 0.0227 ms por muestra = 882 muestras)
-    lsl r2, r0, #1                  // Calcular el número total de bytes en el vector (longitud * 2 bytes por muestra)
-    add r2, r4, r2                  // Calcular la dirección del último elemento del vector
-    sub r3, r2, r1                  // Calcular la dirección del inicio del eco (retrocediendo 882 muestras)
-loop_10:
-    ldrsh r5, [r3]                  // Cargar muestra del eco
-    ldrsh r6, [r4]                  // Cargar muestra original
-    add r6, r6, r5, lsr #1          // Sumar muestra original y muestra de eco dividida por dos
-    strh r6, [r4], #2               // Almacenar muestra sumada en el vector original y avanzar 2 bytes
-    subs r0, r0, #1                 // Decrementar contador de longitud
-    cmp r0, #0                      // Comparar contador con cero
-    bne loop_10                     // Repetir mientras contador no sea cero
-    pop {r4}                    	// Recuperar registros y retornar
-    bx lr
+    	push {r4-r6}
+    	mov r4, #882  				// Retraso de 20ms (882)
+    	mov r2, #4095 				// Cant de muestras (4096)
+    loop_10:
+    	sub r3, r2, r4  			// (4096 - 882)
+    	ldrsh r5, [r0, r2, LSL #1]  // Cargo la muestra
+    	ldrsh r6, [r0, r3, LSL #1]  // Cargo la muestra desplazada
+    	asr r6, #1					// Hago un desplazamiento hacia la derecha para dividir por dos
+    	add r6, r5, r6 				// Sumo la division anterior a la muestra
+    	strh r6, [r1, r2, LSL #1]
+    	cmp r2, r4  				// Si el desplazamiento de las muestras alcanza a 882, no hay que agregar "eco"
+    	sub r2, #1
+    	bne loop_10					// si ya no se agrega delay copiamos las muestras directamente
+    loop_10_2:
+    	ldrh r6, [r0, r2, LSL #1]
+    	strh r6, [r1, r2, LSL #1]
+    	subs r2, #1
+    	bne loop_10_2
+    	pop {r4-r6}
+        bx lr
+//VARIANTE SIMD --- > No encontre donde aplicar instrucciones SIMD para mejorar la performance, quizas si hubiese hecho calculos en funcion de los parametros ingresados
 
-//VARIANTE SIMD
+
+
 
 
 
@@ -339,7 +322,6 @@ funciones da como resultado una nueva función llamada función de correlación.
 Realizar una función que calcule la correlación entre dos vectores. Luego optimice utilizando instrucciones SIMD.
 
 prototipo: void corr (int16_t *vectorX, int16_t * vector Y, int16_t vectorCorr, uint32_t longitud)
-
 
 */
 
