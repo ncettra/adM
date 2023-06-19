@@ -128,27 +128,22 @@ void zeros(uint32_t *vector, uint32_t longitud) {
         vector[i] = 0;
     }
 }
-
 //optimizado, dsp aplicar en todos.....:
-
 void zeros_optimizada(uint32_t *vector, uint32_t longitud) {
     for (; longitud >0; longitud--) {
         vector[longitud-1] = 0;
     }
 }
-
 void productoEscalar32(uint32_t *vectorIn, uint32_t *vectorOut, uint32_t longitud, uint32_t escalar) {
     for (uint32_t i = 0; i < longitud; i++) { //en clase no utilizaron la variable auxiliar i,
         vectorOut[i] = vectorIn[i] * escalar;
     }
 }
-
 void productoEscalar16(uint16_t *vectorIn, uint16_t *vectorOut, uint32_t longitud, uint16_t escalar) {
     for (uint32_t i = 0; i < longitud; i++) {
         vectorOut[i] = vectorIn[i] * escalar;
     }
 }
-
 void productoEscalar12(uint16_t *vectorIn, uint16_t *vectorOut, uint32_t longitud, uint16_t escalar) {
     for (uint32_t i = 0; i < longitud; i++) {
         uint32_t resultado = (uint32_t)vectorIn[i] * (uint32_t)escalar;
@@ -159,34 +154,28 @@ void productoEscalar12(uint16_t *vectorIn, uint16_t *vectorOut, uint32_t longitu
         }
     }
 }
+void filtroVentana10(uint16_t *vectorIn, uint16_t *vectorOut, uint32_t longitud) {
+    int32_t p;
+    const uint8_t SampleOffset = 5;
+    const uint8_t WindowSize = (SampleOffset * 2) + 1;
 
-void filtroVentana10(uint16_t *vectorIn, uint16_t *vectorOut, uint32_t longitudVectorIn) {
+    for (int32_t i = longitud - 1; i >= 0; i--) {
+        p = i;
+        vectorOut[p] = 0;
 
-	uint32_t suma = 0;
-    uint32_t elementos = 0;
-
-    for (uint32_t i = 0; i < longitudVectorIn; i++) {
-
-
-        // Sumar los valores de la ventana actual
-        for (int j = i - 9; j <= i; j++) {
-            if (j >= 0) {
-                suma += vectorIn[j];
-                elementos++;
+        for (int32_t j = p + SampleOffset; j >= p - SampleOffset; j--) {
+            if (j < longitud && j >= 0) {
+                vectorOut[p] += vectorIn[j];
             }
         }
-
-        // Calcular el promedio de la ventana
-        vectorOut[i] = suma / elementos;
+        vectorOut[p] /= WindowSize;
     }
 }
-
 void pack32to16(int32_t *vectorIn, int16_t *vectorOut, uint32_t longitud) {
     for (uint32_t i = 0; i < longitud; i++) {
         vectorOut[i] = (int16_t)(vectorIn[i] >> 16);
     }
 }
-
 int32_t max(int32_t *vectorIn, uint32_t longitud) {
     int32_t maxValor = vectorIn[0];
     uint32_t maxPosicion = 0;
@@ -200,7 +189,6 @@ int32_t max(int32_t *vectorIn, uint32_t longitud) {
 
     return maxPosicion;
 }
-
 void downsampleM(int32_t *vectorIn, int32_t *vectorOut, uint32_t longitud, uint32_t N) {
     uint32_t i;
     uint32_t j = 0;
@@ -220,7 +208,6 @@ void invertir(uint16_t *vector, uint32_t longitud) {
         vector[longitud - i - 1] = temp;
     }
 }
-
 void introducirEco(int16_t *vector, int16_t *vectorOut) {
     uint32_t retrasoMuestras = 882; // 20ms de retraso = 882 muetras
     uint32_t longitud = 4096;
@@ -255,8 +242,6 @@ void introducirEco_Intrinsic(int16_t *vector, int16_t *vectorOut) {
     }
 
 }
-
-
 void corr(int16_t *vectorX, int16_t *vectorY, int16_t *vectorCorr, uint32_t longitud) {
     for (uint32_t lag = 0; lag < longitud; lag++) {
         int32_t sum = 0;
@@ -314,149 +299,101 @@ int main(void)
    * 	EJERCICIO 1 PRUEBA DE FUNCIONES EN C y ASM
    *
    * */
-
   uint32_t resultado[10] = {10,20,10,40,50,60,20,10,20,40};
   DWT->CYCCNT = 0;  asm_zeros(resultado, 10);  ciclosASM = DWT->CYCCNT;
   DWT->CYCCNT = 0;  zeros(resultado, 10);  ciclosC = DWT->CYCCNT;
   DWT->CYCCNT = 0;  zeros_optimizada(resultado, 10);  ciclosC2 = DWT->CYCCNT;
-
-
   /*
    * 	EJERCICIO 2 PRUEBA DE FUNCIONES EN C y ASM
    *
    * */
-
   uint32_t vectorIN_ej2[10] = {10,20,10,40,50,60,70,80,90,100};
-  uint32_t vectorOUT_ej2[10] = {0,0,0,0,0,0,0,0,0,0};
+  uint32_t vectorOUT_ej2[10] = {0};
   uint32_t longitud_ej2 = 10, escalar_ej2 = 2;
   DWT->CYCCNT = 0;  asm_productoEscalar32(vectorIN_ej2,vectorOUT_ej2,longitud_ej2,escalar_ej2);  ciclosASM = DWT->CYCCNT;
   DWT->CYCCNT = 0;  productoEscalar32(vectorIN_ej2,vectorOUT_ej2,longitud_ej2,escalar_ej2);  ciclosC = DWT->CYCCNT;
-
   /*
    * 	EJERCICIO 3 PRUEBA DE FUNCIONES EN C y ASM
    *
    * */
-
   uint16_t vectorIN_ej3[5] = {10,20,10,40,50};
-  uint16_t vectorOUT_ej3[5] = {0,0,0,0,0};
+  uint16_t vectorOUT_ej3[5] = {0};
   uint32_t longitud_ej3 = 5;
   uint16_t escalar_ej3 = 2;
   DWT->CYCCNT = 0;  asm_productoEscalar16(vectorIN_ej3,vectorOUT_ej3,longitud_ej3,escalar_ej3);  ciclosASM = DWT->CYCCNT;
   DWT->CYCCNT = 0;  productoEscalar16(vectorIN_ej3,vectorOUT_ej3,longitud_ej3,escalar_ej3);  ciclosC = DWT->CYCCNT;
-
   /*
    * 	EJERCICIO 4 PRUEBA DE FUNCIONES EN C y ASM
    *
    * */
-
   uint16_t vectorIN_ej4[5] = {10000,10000,10000,10000,10000};
-  uint16_t vectorOUT_ej4[5] = {0,0,0,0,0};
+  uint16_t vectorOUT_ej4[5] = {0};
   uint32_t longitud_ej4 = 5;
   uint16_t escalar_ej4 = 6;
-
   DWT->CYCCNT = 0;  asm_productoEscalar12(vectorIN_ej4,vectorOUT_ej4,longitud_ej4,escalar_ej4);  ciclosASM = DWT->CYCCNT;
   DWT->CYCCNT = 0;  productoEscalar12(vectorIN_ej4,vectorOUT_ej4,longitud_ej4,escalar_ej4);  ciclosC = DWT->CYCCNT;
-
-
   /*
    * 	EJERCICIO 5 PRUEBA DE FUNCIONES EN C y ASM
    *
    * */
-
-
-
-
-
-
+  uint16_t vectorIN_ej5[10] = {1,2,3,4,5,6,7,8,9};
+  uint16_t vectorOUT_ej5[10] = {0};
+  uint32_t longitud_ej5 = 10;
+  DWT->CYCCNT = 0;  asm_filtroVentana10(vectorIN_ej5,vectorOUT_ej5,longitud_ej5);  ciclosASM = DWT->CYCCNT;
+  DWT->CYCCNT = 0;  filtroVentana10(vectorIN_ej5,vectorOUT_ej5,longitud_ej5);  ciclosC = DWT->CYCCNT;
   /*
    * 	EJERCICIO 6 PRUEBA DE FUNCIONES EN C y ASM
    *
    * */
-
   uint32_t vectorIN_ej6[5] = {0xFFFF,0xFEFF,0xEAFF,0xE9FF,0x01FF};
-  uint32_t vectorOUT_ej6[5] = {0,0,0,0,0};
+  uint32_t vectorOUT_ej6[5] = {0};
   uint32_t longitud_ej6 = 5;
-
   DWT->CYCCNT = 0;  asm_pack32to16(vectorIN_ej6,vectorOUT_ej6,longitud_ej6);  ciclosASM = DWT->CYCCNT;
   DWT->CYCCNT = 0;  pack32to16(vectorIN_ej6,vectorOUT_ej6,longitud_ej6);  ciclosC = DWT->CYCCNT;
-
-
   /*
    * 	EJERCICIO 7 PRUEBA DE FUNCIONES EN C y ASM
    *
    * */
-
   uint32_t vectorIN_ej7[10] = {1,2,3,5,4,8,2,3,5,0};
   uint32_t longitud_ej7 = 10;
-
   DWT->CYCCNT = 0;  uint32_t pos = asm_max32(vectorIN_ej7,longitud_ej7);  ciclosASM = DWT->CYCCNT;
   DWT->CYCCNT = 0;  uint32_t pos2 = max(vectorIN_ej7,longitud_ej7);  ciclosC = DWT->CYCCNT;
-
-
-
   /*
    * 	EJERCICIO 8 PRUEBA DE FUNCIONES EN C y ASM
    *
    * */
-
   uint32_t vectorIN_ej8[10] = {1,2,3,4,5,6,7,8,9,10};
-  uint32_t vectorOUT_ej8[10] = {0,0,0,0,0,0,0,0,0,0};
+  uint32_t vectorOUT_ej8[10] = {0};
   uint32_t longitud_ej8 = 10;
   uint32_t N = 2;
-
   DWT->CYCCNT = 0;  asm_downsampleM(vectorIN_ej8,vectorOUT_ej8,longitud_ej8,N);  ciclosASM = DWT->CYCCNT;
   DWT->CYCCNT = 0;  downsampleM(vectorIN_ej8,vectorOUT_ej8,longitud_ej8,N);  ciclosC = DWT->CYCCNT;
-
   /*
    * 	EJERCICIO 9 PRUEBA DE FUNCIONES EN C y ASM
    *
    * */
-
   uint16_t vectorIN_ej9[10] = {1,2,3,4,5,6,7,8,9,10};
   uint32_t longitud_ej9 = 10;
-
   DWT->CYCCNT = 0;  asm_invertir(vectorIN_ej9,longitud_ej9);  ciclosASM = DWT->CYCCNT;
   DWT->CYCCNT = 0;  invertir(vectorIN_ej9,longitud_ej9);  ciclosC = DWT->CYCCNT;
-
-
-
   int16_t muestras[4096];
   int16_t muestras_eco[4096];
 
-
-
  //prueba de eco, no hago una funcion asm con SIMD porque no encuentro donde aplicarlo eficientemente
+  muestras[0] = 10;  muestras[1] = 15;  muestras[2] = 20;  muestras[3] = 25;
+  muestras[882] = 10;  muestras[883] = 20;  muestras[884] = 30;  muestras[885] = 40;
+  muestras_eco[882] = 0;  muestras_eco[883] = 0;  muestras_eco[884] = 0;  muestras_eco[885] = 0;
+  DWT->CYCCNT = 0;  asm_eco(muestras, muestras_eco);  ciclosASM = DWT->CYCCNT;
 
   muestras[0] = 10;  muestras[1] = 15;  muestras[2] = 20;  muestras[3] = 25;
   muestras[882] = 10;  muestras[883] = 20;  muestras[884] = 30;  muestras[885] = 40;
-  muestras_eco[0] = 0;  muestras_eco[1] = 0;  muestras_eco[2] = 0;  muestras_eco[3] = 0;
   muestras_eco[882] = 0;  muestras_eco[883] = 0;  muestras_eco[884] = 0;  muestras_eco[885] = 0;
-
-  DWT->CYCCNT = 0;
-  asm_eco(muestras, muestras_eco);
-  ciclosASM = DWT->CYCCNT;
+  DWT->CYCCNT = 0;  introducirEco(muestras, muestras_eco);  ciclosC = DWT->CYCCNT;
 
   muestras[0] = 10;  muestras[1] = 15;  muestras[2] = 20;  muestras[3] = 25;
   muestras[882] = 10;  muestras[883] = 20;  muestras[884] = 30;  muestras[885] = 40;
-  muestras_eco[0] = 0;  muestras_eco[1] = 0;  muestras_eco[2] = 0;  muestras_eco[3] = 0;
   muestras_eco[882] = 0;  muestras_eco[883] = 0;  muestras_eco[884] = 0;  muestras_eco[885] = 0;
-
-
-  DWT->CYCCNT = 0;
-  introducirEco(muestras, muestras_eco);
-  ciclosC = DWT->CYCCNT;
-
-  muestras[0] = 10;  muestras[1] = 15;  muestras[2] = 20;  muestras[3] = 25;
-  muestras[882] = 10;  muestras[883] = 20;  muestras[884] = 30;  muestras[885] = 40;
-  muestras_eco[0] = 0;  muestras_eco[1] = 0;  muestras_eco[2] = 0;  muestras_eco[3] = 0;
-  muestras_eco[882] = 0;  muestras_eco[883] = 0;  muestras_eco[884] = 0;  muestras_eco[885] = 0;
-
-
-  DWT->CYCCNT = 0;
-  introducirEco_Intrinsic(muestras, muestras_eco);
-  ciclosC = DWT->CYCCNT;
-
-
+  DWT->CYCCNT = 0;  introducirEco_Intrinsic(muestras, muestras_eco);  ciclosC = DWT->CYCCNT;
 
 
   /* USER CODE END 2 */

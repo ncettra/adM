@@ -143,27 +143,56 @@ asm_productoEscalar12:
 /*
 5) Realice una función que implemente un filtro de ventana móvil de 10 valores sobre un vector de muestras
 prototipo: void filtroVentana10(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitudVectorIn);
+
+
+
 */
 .thumb_func
 asm_filtroVentana10:
-    push {r4, r5, r6}           // Guardar registros en la pila
-    mov r6, #10                 // Longitud de la ventana
-    mov r5, r2                  // Puntero al vector de entrada
-    mov r4, r1                  // Puntero al vector de salida
-    ldr r3, [r5], #2            // Cargar primer valor de entrada
-    movs r2, #0                 // Inicializar sumatoria a cero
-    mov r1, r6                  // Inicializar contador a longitud de ventana
-    mov r0, r1                  // Guardar longitud de ventana en r0
-loop_5:
-    ldrh r1, [r5], #2           // Cargar siguiente valor de entrada
-    adds r2, r2, r1             // Sumar valor a la sumatoria
-    subs r1, r2, r3             // Restar primer valor de la ventana
-    strh r1, [r4], #2           // Guardar resultado en vector de salida
-    mov r3, r2                  // Actualizar primer valor de la ventana
-    subs r0, r0, #1             // Decrementar contador
-    bne loop_5                  // Repetir mientras contador no sea cero
-    pop {r4, r5, r6, pc}        // Recuperar registros y retornar
-    bx lr
+push {r4-r10}
+
+	//r0 vector in
+	//r1 vector out
+	//r2 logintud
+	//r10 -> SampleOffset = 5 (ver en programa en C)
+	//r9 -> WindowSize = SampleOffset*2 + 1 ---> 11
+
+	mov r3, r2					// Resguardo longitud (r2) para ver cuando estoy fuera del vector
+	mov r9, #11 				// cantidad de muestras ventana
+	mov r10, #5 				// posicion de la ventana
+
+loop_5_1: 						// Recorremos VectorIN
+	subs r3, #1
+	beq exit_5					// Si ya lo recorri saltar al exit
+	mov r6, #0					// Limpio el acumulador
+	add r4, r3, r10				// Posicion del vector + posicion central de la ventana r3+r10
+	cmp r4, r9					// Comparo con la cantidad de muestras que tiene la ventana
+	mov r7, #0
+	itt gt						// Verifico que si la ventana es maás grande que las muestras restantes
+	subgt r7, r4, r9
+	subgt r7, #1
+	mov r8, r9
+
+loop_5_2:						// Recorremos la ventana para sumar y promediar
+	subs r4, #1
+	beq loop_5_1
+	cmp r2, r4					// ignorar operaciones si estamos afura del vector
+	bls loop_5_2
+	cmp r4, r7
+	ittt ls						// Chequeo si llegue al final
+	udivls r6, r6, r8			// Si llegue divido para promediar
+	strhls r6, [r1, r3, LSL #1]	// Guardo el resultado en vector out
+	bls loop_5_1				// Sigue con el siguiente valor
+
+	ldrh r5, [r0, r4, LSL #1]
+	add r6, r6, r5				// r6 = r6 + r5 se suma una muetra más
+	b loop_5_2
+
+exit_5:
+	pop {r4-r10}
+	bx lr
+
+
 /*
 6) Realizar una función que reciba un vector de números signados de 32 bits y los “empaquete” en
 otro vector de 16 bits. La función deberá adecuar los valores de entrada a la nueva precisión.
@@ -254,8 +283,8 @@ push {r4}
     loop_9:
     	subs r1, #1
 
-    	ldrh r3, [r0, r2, LSL #1]  	// !--->   !
-    	ldrh r4, [r0, r1, LSL #1]  	// !   <---!
+    	ldrh r3, [r0, r2, LSL #1]  	// !----->     !
+    	ldrh r4, [r0, r1, LSL #1]  	// !     <-----!
 
     	cmp r1, r2 					//verifico que el indice izq sea distinto al derecho
 
@@ -300,7 +329,7 @@ asm_eco:
     	strh r6, [r1, r2, LSL #1]
     	cmp r2, r4  				// Si el desplazamiento de las muestras alcanza a 882, no hay que agregar "eco"
     	sub r2, #1
-    	bne loop_10					// si ya no se agrega delay copiamos las muestras directamente
+    	bne loop_10					// si ya no se agrega "eco" copiamos las muestras directamente
     loop_10_2:
     	ldrh r6, [r0, r2, LSL #1]
     	strh r6, [r1, r2, LSL #1]
@@ -308,12 +337,7 @@ asm_eco:
     	bne loop_10_2
     	pop {r4-r6}
         bx lr
-//VARIANTE SIMD --- > No encontre donde aplicar instrucciones SIMD para mejorar la performance, quizas si hubiese hecho calculos en funcion de los parametros ingresados
-
-
-
-
-
+//VARIANTE SIMD --- > No encontre donde aplicar instrucciones SIMD para mejorar la performance, quizas si hubiese hecho calculos en funcion de los parametros ingresados podria utilizarlos
 
 /*
 11) La correlación cruzada (del inglés cross correlation) es una operación usada para estudiar el grado de similitud de dos señales y su fase relativa, aún en presencia de ruido. La correlación de dos
