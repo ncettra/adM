@@ -260,13 +260,13 @@ asm_downsampleM:
     push {r4-r6}
     mov r4, #0                   // i = 0
     mov r5, #0                   // j = 0
-loop:
+loop_8:
     ldr r6, [r0, r4, LSL #2]     // Cargar muestra de vectorIn
     str r6, [r1, r5, LSL #2]     // Almacenar muestra en vectorOut
     add r4, r4, r3               // Incrementar i por N
     add r5, r5, #1               // Incrementar j
     cmp r4, r2                   // Comparar i con longitud
-    blt loop                     // Volver al bucle si i < longitud
+    blt loop_8                   // Volver al bucle si i < longitud
     pop {r4-r6}
     bx lr
 /*
@@ -347,28 +347,48 @@ Realizar una función que calcule la correlación entre dos vectores. Luego opti
 
 prototipo: void corr (int16_t *vectorX, int16_t * vector Y, int16_t vectorCorr, uint32_t longitud)
 
+   r0 = vectorX
+   r1 = vectorY
+   r2 = vectorCorr
+   r3 = longitud
+
 */
 
 .thumb_func
-asm_calcularCorrelacion:
-    push {r4, r5, r6}           	// Guardar registros en la pila
-    mov r4, r0                      // Puntero al primer vector
-    mov r5, r1                      // Puntero al segundo vector
-    mov r6, r2                      // Longitud de los vectores
-    ldr r0, [r4]                    // Cargar el primer valor del primer vector
-    ldr r1, [r5]                    // Cargar el primer valor del segundo vector
-    mov r2, #0                      // Inicializar el acumulador de la correlación en cero
-loop_11:
-    mul r3, r0, r1                  // Multiplicar los valores de los vectores
-    add r2, r2, r3                  // Acumular el resultado de la multiplicación
-    add r4, r4, #4                  // Avanzar al siguiente valor del primer vector (incrementar en 4 bytes)
-    add r5, r5, #4                  // Avanzar al siguiente valor del segundo vector (incrementar en 4 bytes)
-    ldr r0, [r4]                    // Cargar el siguiente valor del primer vector
-    ldr r1, [r5]                    // Cargar el siguiente valor del segundo vector
-    subs r6, r6, #1                 // Decrementar el contador de longitud en 1
-    cmp r6, #0                      // Comparar el contador con cero
-    bne loop_11                     // Repetir mientras el contador no sea cero
-    pop {r4, r5, r6}            	// Recuperar registros y retornar
+asm_calcularCorrelacion: //APLICANDO SIMD
+
+    push {r4, r5, r6, r7, r8, r9, r10}
+    mov r4, #0
+    mov r5, r0                  // r5 = vectorX
+    mov r6, r1                  // r6 = vectorY
+    mov r7, r2                  // r7 = vectorCorr
+    mov r8, r3                  // r8 = longitud
+
+loop_out_11:
+    mov r9, r4                  // r9 = i
+    mov r10, #0                 // r10 = sum
+
+loop_in_11:
+    lsl r11, r9, #1             // r11 = 2 * i
+    lsl r12, r4, #1             // r12 = 2 * j
+
+    ldrh r0, [r5, r11]          // r0 = vectorX[i + j]
+    ldrh r1, [r6, r12]          // r1 = vectorY[j]
+
+    smull r0, r1, r0, r1        // r0:r1 = vectorX[i + j] * vectorY[j]
+    add r10, r10, r0            // r10 += vectorX[i + j] * vectorY[j]
+
+    add r9, r9, #1              // i++
+    cmp r9, r8
+    blt loop_in_11
+
+    strh r10, [r7, r4, lsl #1]  // vectorCorr[i] = sum
+
+    add r4, r4, #1              // j++
+    cmp r4, r8
+    blt loop_out_11
+
+    pop {r4, r5, r6, r7, r8, r9, r10}
     bx lr
 
 // con simd

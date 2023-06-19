@@ -243,14 +243,27 @@ void introducirEco_Intrinsic(int16_t *vector, int16_t *vectorOut) {
 
 }
 void corr(int16_t *vectorX, int16_t *vectorY, int16_t *vectorCorr, uint32_t longitud) {
-    for (uint32_t lag = 0; lag < longitud; lag++) {
-        int32_t sum = 0;
+    uint32_t i, j;
 
-        for (uint32_t i = 0; i < longitud - lag; i++) {
-            sum += (int32_t)vectorX[i] * (int32_t)vectorY[i + lag];
+    for (i = 0; i < longitud; i++) {
+        vectorCorr[i] = 0;
+        for (j = 0; j < longitud; j++) {
+            if (i + j < longitud) {
+                vectorCorr[i] += vectorX[i + j] * vectorY[j];
+            }
         }
+    }
+}
+void corr_Intrinsic(int16_t *vectorX, int16_t *vectorY, int16_t *vectorCorr, uint32_t longitud) {
+    uint32_t i, j;
 
-        vectorCorr[lag] = (int16_t)(sum / longitud);
+    for (i = 0; i < longitud; i++) {
+        vectorCorr[i] = 0;
+        for (j = 0; j < longitud; j++) {
+            if (i + j < longitud) {
+                vectorCorr[i] += (int16_t)__SMLAD(vectorX[i + j], vectorY[j], vectorCorr[i]);
+            }
+        }
     }
 }
 /* USER CODE END 0 */
@@ -394,6 +407,18 @@ int main(void)
   muestras[882] = 10;  muestras[883] = 20;  muestras[884] = 30;  muestras[885] = 40;
   muestras_eco[882] = 0;  muestras_eco[883] = 0;  muestras_eco[884] = 0;  muestras_eco[885] = 0;
   DWT->CYCCNT = 0;  introducirEco_Intrinsic(muestras, muestras_eco);  ciclosC = DWT->CYCCNT;
+  /*
+   * 	EJERCICIO 10 PRUEBA DE FUNCIONES EN C y ASM
+   *
+   * */
+	uint32_t longitude = 15;
+	int16_t vX[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5};
+	int16_t vY[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5};
+	int16_t vOut[longitude];
+	DWT->CYCCNT = 0;    corr(vX, vY, vOut, longitude);    ciclosC = DWT->CYCCNT;
+	DWT->CYCCNT = 0;	corr_Intrinsic(vX, vY, vOut, longitude);    ciclosC = DWT->CYCCNT;
+	//DWT->CYCCNT = 0;    asm_calcularCorrelacion(vX, vY, vOut, longitude);    ciclosASM = DWT->CYCCNT;
+
 
 
   /* USER CODE END 2 */
