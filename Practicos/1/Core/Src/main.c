@@ -225,6 +225,9 @@ void introducirEco(int16_t *vector, int16_t *vectorOut) {
     }
 
 }
+
+// https://www.keil.com/pack/doc/CMSIS/Core/html/group__intrinsic__SIMD__gr.html
+
 void introducirEco_Intrinsic(int16_t *vector, int16_t *vectorOut) {
     uint32_t retrasoMuestras = 882; // 20ms de retraso = 882 muetras
     uint32_t longitud = 4096;
@@ -261,7 +264,8 @@ void corr_Intrinsic(int16_t *vectorX, int16_t *vectorY, int16_t *vectorCorr, uin
         vectorCorr[i] = 0;
         for (j = 0; j < longitud; j++) {
             if (i + j < longitud) {
-                vectorCorr[i] += (int16_t)__SMLAD(vectorX[i + j], vectorY[j], vectorCorr[i]);
+            	//__SMUADX <---- dsp probar con esa
+                vectorCorr[i] += __SMUAD(vectorX[i + j] , vectorY[j]);
             }
         }
     }
@@ -411,13 +415,13 @@ int main(void)
    * 	EJERCICIO 10 PRUEBA DE FUNCIONES EN C y ASM
    *
    * */
-	uint32_t longitude = 15;
-	int16_t vX[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5};
-	int16_t vY[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5};
-	int16_t vOut[longitude];
-	DWT->CYCCNT = 0;    corr(vX, vY, vOut, longitude);    ciclosC = DWT->CYCCNT;
-	DWT->CYCCNT = 0;	corr_Intrinsic(vX, vY, vOut, longitude);    ciclosC = DWT->CYCCNT;
-	//DWT->CYCCNT = 0;    asm_calcularCorrelacion(vX, vY, vOut, longitude);    ciclosASM = DWT->CYCCNT;
+  uint32_t longitude = 15;
+  int16_t vX[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5};
+  int16_t vY[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5};
+  int16_t vOut[longitude];
+  DWT->CYCCNT = 0;    corr(vX, vY, vOut, longitude);    ciclosC = DWT->CYCCNT;
+  DWT->CYCCNT = 0;	corr_Intrinsic(vX, vY, vOut, longitude);    ciclosC = DWT->CYCCNT;
+  DWT->CYCCNT = 0;    asm_calcularCorrelacion(vX, vY, vOut, longitude);    ciclosASM = DWT->CYCCNT;
 
 
 
